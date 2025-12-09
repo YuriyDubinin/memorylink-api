@@ -1,11 +1,13 @@
 #include "http_server.hpp"
 
-HttpServer::HttpServer(const int port) : port_(port) {}
+HttpServer::HttpServer(const std::string& host, int port)
+    : host_(host), port_(port) {}
 
 void HttpServer::Init() {
     SetupRoutes_();
     Run();
-    std::cout << "[HTTP Server]: started" << std::endl;
+    std::cout << "[HTTPServer]: started, host:port: "
+              << host_ << ":" << port_ << std::endl;
 }
 
 void HttpServer::SetupRoutes_() {
@@ -15,5 +17,5 @@ void HttpServer::SetupRoutes_() {
 }
 
 void HttpServer::Run() {
-    server_.listen("0.0.0.0", port_);
+    server_.listen(host_, port_);
 }
