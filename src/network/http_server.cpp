@@ -10,7 +10,7 @@ void HttpServer::Init() {
 
 void HttpServer::SetupRoutes_() {
     server_.Get("/test", [](const httplib::Request&, httplib::Response& res){
-        res.set_content("Hello from /test!", "text/plain");
+        res.set_content("Test", "text/plain");
     });
 }
 

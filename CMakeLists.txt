@@ -4,10 +4,12 @@ project(memorylink_api)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB_RECURSE UTILS_SOURCE src/utils/*.cpp)
+file(GLOB_RECURSE NETWORK_SOURCE src/utils/*.cpp)
+file(GLOB_RECURSE UTILS_SOURCE src/network/*.cpp)
 
 set(SOURCES
         src/main.cpp
+        ${NETWORK_SOURCE}
         ${UTILS_SOURCE}
 )
 
