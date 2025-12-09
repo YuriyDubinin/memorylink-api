@@ -6,7 +6,7 @@
 
 class HttpServer {
 public:
-    HttpServer(const std::string& host, int port = 8080);
+    explicit HttpServer(const std::string& host, int port = 8080);
     void Init();
     void Run();
 

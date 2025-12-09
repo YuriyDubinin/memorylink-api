@@ -1,5 +1,4 @@
 #include <config/config_loader.hpp>
-#include <iostream> // для std::cout
 
 Config ConfigLoader::Load(const std::string& filename) {
     FILE* fp = fopen(filename.c_str(), "r");
