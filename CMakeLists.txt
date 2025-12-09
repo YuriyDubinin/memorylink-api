@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE CONFIG_SOURCE src/config/*.cpp)
 file(GLOB_RECURSE NETWORK_SOURCE src/utils/*.cpp)
+file(GLOB_RECURSE HANDLERS_SOURCE src/handlers/*.cpp)
 file(GLOB_RECURSE MODELS_SOURCE src/models/*.cpp)
 file(GLOB_RECURSE UTILS_SOURCE src/network/*.cpp)
 
@@ -13,6 +14,7 @@ set(SOURCES
         src/main.cpp
         ${CONFIG_SOURCE}
         ${NETWORK_SOURCE}
+        ${HANDLERS_SOURCE}
         ${MODELS_SOURCE}
         ${UTILS_SOURCE}
 )

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <httplib/httplib.h>
+#include <handlers/user_handler.hpp>
 
 class HttpServer {
 public:

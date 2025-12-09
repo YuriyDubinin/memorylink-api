@@ -10,6 +10,9 @@ void HttpServer::Init() {
 
 void HttpServer::SetupRoutes_() {
     server_.Get("/test", [](const httplib::Request&, httplib::Response& res){
+        UserHandler user_handler;
+
+        user_handler.HandleGetTest();
         res.set_content("Test", "text/plain");
     });
 }
