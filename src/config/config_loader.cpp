@@ -4,7 +4,7 @@
 Config ConfigLoader::Load(const std::string& filename) {
     FILE* fp = fopen(filename.c_str(), "r");
     if (!fp) {
-        throw std::runtime_error("Cannot open config file: " + filename);
+        throw std::runtime_error("[ConfigLoader]: Cannot open config file: " + filename);
     }
 
     char readBuffer[65536];
@@ -15,7 +15,7 @@ Config ConfigLoader::Load(const std::string& filename) {
     fclose(fp);
 
     if (doc.HasParseError()) {
-        throw std::runtime_error("JSON parse error in config file");
+        throw std::runtime_error("[ConfigLoader]: JSON parse error in config file");
     }
 
     Config cfg;
@@ -26,16 +26,16 @@ Config ConfigLoader::Load(const std::string& filename) {
         if (http.HasMember("host") && http["host"].IsString()) {
             cfg.host = http["host"].GetString();
         } else {
-            throw std::runtime_error("Missing or invalid 'host' in config");
+            throw std::runtime_error("[ConfigLoader]: Missing or invalid 'host' in config");
         }
 
         if (http.HasMember("port") && http["port"].IsInt()) {
             cfg.port = doc["http"]["port"].GetInt();
         } else {
-            throw std::runtime_error("Missing or invalid 'port' in config");
+            throw std::runtime_error("[ConfigLoader]: Missing or invalid 'port' in config");
         }
     } else {
-        throw std::runtime_error("Missing 'http' section in config");
+        throw std::runtime_error("[ConfigLoader]: Missing 'http' section in config");
     }
 
     // Парс пути загрузки файлов

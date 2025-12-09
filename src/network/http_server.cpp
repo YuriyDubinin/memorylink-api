@@ -6,8 +6,6 @@ HttpServer::HttpServer(const std::string& host, int port)
 void HttpServer::Init() {
     SetupRoutes_();
     Run();
-    std::cout << "[HTTPServer]: started, host:port: "
-              << host_ << ":" << port_ << std::endl;
 }
 
 void HttpServer::SetupRoutes_() {
@@ -17,5 +15,7 @@ void HttpServer::SetupRoutes_() {
 }
 
 void HttpServer::Run() {
+    std::cout << "[HTTPServer]: started, "
+              << host_ << ":" << port_ << std::endl;
     server_.listen(host_, port_);
 }
