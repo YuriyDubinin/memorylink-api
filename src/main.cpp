@@ -1,6 +1,8 @@
 #include <iostream>
+#include <network/http_server.hpp>
 
 int main() {
-    std::cout << "MemoryLink API server started!" << std::endl;
+    HttpServer http_server(8080);
+    http_server.Init();
     return 0;
 }
