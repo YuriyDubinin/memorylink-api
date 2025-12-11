@@ -11,7 +11,7 @@ void HttpServer::Init() {
 void HttpServer::SetupRoutes_() {
     server_.Get("/test", [](const httplib::Request&, httplib::Response& res){
         res.set_header("Access-Control-Allow-Origin", "*");
-        utils::http_response::SendJsonResponse(res, "Unauthorized", 401, "Authentication required");
+        utils::http_response::SendJsonResponse(res, "SUCCESS", 200, "Success");
     });
 
     server_.Options("/test", [](const httplib::Request&, httplib::Response& res){
