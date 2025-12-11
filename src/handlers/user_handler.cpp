@@ -2,4 +2,7 @@
 
 void UserHandler::HandleGetTest() {
     std::cout << "[UserHandler]: HandleGetTest" << std::endl;
+
+    // TODO: блок валидации
+
 }

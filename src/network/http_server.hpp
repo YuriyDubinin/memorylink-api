@@ -3,7 +3,11 @@
 #include <iostream>
 #include <string>
 #include <httplib/httplib.h>
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 #include <handlers/user_handler.hpp>
+#include <utils/http_response.hpp>
 
 class HttpServer {
 public:
