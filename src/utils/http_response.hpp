@@ -29,4 +29,5 @@ namespace utils::http_response {
         res.status = code;
         res.set_content(buffer.GetString(), "application/json");
     }
+
 }
