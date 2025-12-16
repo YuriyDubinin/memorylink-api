@@ -4,8 +4,6 @@ project(memorylink_api)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-
 file(GLOB_RECURSE CONFIG_SOURCE src/config/*.cpp)
 file(GLOB_RECURSE NETWORK_SOURCE src/utils/*.cpp)
 file(GLOB_RECURSE HANDLERS_SOURCE src/handlers/*.cpp)
@@ -34,6 +32,6 @@ target_include_directories(memorylink_api PRIVATE
         ${CMAKE_SOURCE_DIR}/src
 )
 
-#find_package(libpqxx CONFIG REQUIRED)
-#
-#target_link_libraries(memorylink_api PRIVATE libpqxx::pqxx)
+find_package(libpqxx CONFIG REQUIRED)
+
+target_link_libraries(memorylink_api PRIVATE libpqxx::pqxx)
