@@ -1,15 +1,9 @@
 #include "user.hpp"
 
-bool ValidateUserCheck(const rapidjson::Document& body, std::string& error) {
-    if (!body.HasMember("key")) {
-        error = "Missing 'key' field";
-        return false;
+namespace validators {
+    bool ValidateUserCheck(const rapidjson::Document& body, std::string& error) {
+        if (!body.HasMember("key")) { error = "Missing 'key'"; return false; }
+        if (!body["key"].IsString()) { error = "'key' must be a string"; return false; }
+        return true;
     }
-
-    if (!body["key"].IsString()) {
-        error = "'key' must be a string";
-        return false;
-    }
-
-    return true;
 }
