@@ -6,7 +6,7 @@
 
 int main() {
     try {
-        Config cfg = ConfigLoader::Load("config.json");
+        const Config cfg = ConfigLoader::Load("config.json");
         HttpServer server(cfg.host, cfg.port);
 
         server.Init();
