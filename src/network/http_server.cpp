@@ -20,7 +20,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validators::ValidateUserCheck(body_json, error_msg)) {
+        if (!validators:: validate_user_check(body_json, error_msg)) {
             utils::http_response::send_json_response(res, "ERROR", 400, error_msg);
             return;
         }

@@ -6,5 +6,5 @@
 #include <rapidjson/writer.h>
 
 namespace validators {
-    bool ValidateUserCheck(const rapidjson::Document& body, std::string& error_msg);
+    bool validate_user_check(const rapidjson::Document& body, std::string& error_msg);
 }
