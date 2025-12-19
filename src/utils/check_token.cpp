@@ -5,17 +5,16 @@ namespace utils::guard {
 
     bool check_token(const rapidjson::Document& json, httplib::Response& res) {
         if (!json.HasMember("token")) {
-            utils::http_response::send_json_response(res, "ERROR", 401, "Token is required");
+            utils::http_response::send_json_response(res, "ERROR", 400, "Missing 'token'");
             return false;
         }
 
         if (!json["token"].IsString()) {
-            utils::http_response::send_json_response(res, "ERROR", 400, "Token must be a string");
+            utils::http_response::send_json_response(res, "ERROR", 400, "'token' must be a string");
             return false;
         }
 
         const std::string token = json["token"].GetString();
-
         if (token != EXPECTED_TOKEN) {
             utils::http_response::send_json_response(res, "ERROR", 403, "Invalid token");
             return false;
@@ -23,4 +22,5 @@ namespace utils::guard {
 
         return true;
     }
+
 } // namespace utils::guard

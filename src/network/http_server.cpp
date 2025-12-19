@@ -14,8 +14,8 @@ void HttpServer::SetupRoutes_() {
         rapidjson::Document body_json;
         std::string error_msg;
 
-        if (body_json.Parse(req.body.c_str()).HasParseError()) {
-            utils::http_response::send_json_response(res, "ERROR", 400, "Invalid JSON");
+        if (!utils::guard::validate_json(req, res, body_json, error_msg)) {
+            utils::http_response::send_json_response(res, "ERROR", 400, error_msg);
             return;
         }
 

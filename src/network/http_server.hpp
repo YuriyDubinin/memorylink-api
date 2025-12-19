@@ -7,6 +7,8 @@
 #include <rapidjson/writer.h>
 #include <string>
 #include <utils/http_response.h>
+#include <utils/validate_json.hpp>
+#include <utils/check_token.hpp>
 #include <validators/user.hpp>
 
 class HttpServer {

@@ -8,6 +8,6 @@
 #include <utils/http_response.h>
 
 namespace utils::guard {
-    bool parse_json(const httplib::Request& req, httplib::Response& res,
-                    rapidjson::Document& out_doc);
+    bool validate_json(const httplib::Request& req, httplib::Response& res,
+                    rapidjson::Document& body, std::string& error_msg);
 }
