@@ -16,8 +16,16 @@ PostgresConnection::PostgresConnection(const std::string& connection_info) {
     }
 }
 
-void Init(std::string& connection_info) {
+void PostgresConnection::Check() const {
+    if (!connection_) {
+        throw std::runtime_error("[DBConnection]: DB connection object is null");
+    }
 
+    if (!connection_->is_open()) {
+        throw std::runtime_error("[DBConnection]: DB connection is not open");
+    }
+
+    std::cout << "[DBConnection]: DB connected successfully" << std::endl;
 }
 
 bool PostgresConnection::IsConnected() const {

@@ -12,7 +12,7 @@ public:
     PostgresConnection(const PostgresConnection&) = delete;
     PostgresConnection& operator=(const PostgresConnection&) = delete;
 
-    void Init(std::string& connection_info);
+    void Check() const;
 
     bool IsConnected() const;
 
