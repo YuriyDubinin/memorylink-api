@@ -4,15 +4,15 @@
 
 PostgresConnection::PostgresConnection(const std::string& connection_info) {
     try {
-      connection_ = std::make_unique<pqxx::connection>(connection_info);
+        connection_ = std::make_unique<pqxx::connection>(connection_info);
 
-      if (!connection_->is_open()) {
-        std::cerr << "[DBConnection]: Connection failed" << std::endl;
-        connection_.reset();
-      }
+        if (!connection_->is_open()) {
+            std::cerr << "[DBConnection]: Connection failed" << std::endl;
+            connection_.reset();
+        }
     } catch (const std::exception& e) {
-      std::cerr << "[DBConnection]: Exception while connecting: " << e.what() << std::endl;
-      connection_.reset();
+        std::cerr << "[DBConnection]: Exception while connecting: " << e.what() << std::endl;
+        connection_.reset();
     }
 }
 
@@ -34,7 +34,7 @@ bool PostgresConnection::IsConnected() const {
 
 pqxx::result PostgresConnection::execute(const std::string& query) {
     if (!IsConnected()) {
-      throw std::runtime_error("[DBConnection]: is not connected");
+        throw std::runtime_error("[DBConnection]: is not connected");
     }
 
     pqxx::work tx(*connection_);
@@ -46,7 +46,7 @@ pqxx::result PostgresConnection::execute(const std::string& query) {
 
 void PostgresConnection::prepare(const std::string& name, const std::string& query) {
     if (!IsConnected()) {
-      throw std::runtime_error("[DBConnection]: is not connected");
+        throw std::runtime_error("[DBConnection]: is not connected");
     }
 
     connection_->prepare(name, query);
@@ -55,7 +55,7 @@ void PostgresConnection::prepare(const std::string& name, const std::string& que
 template <typename... Args>
 pqxx::result PostgresConnection::execute_prepared(const std::string& name, Args&&... args) {
     if (!IsConnected()) {
-      throw std::runtime_error("[DBConnection]: is not connected");
+        throw std::runtime_error("[DBConnection]: is not connected");
     }
 
     pqxx::work tx(*connection_);
@@ -67,7 +67,7 @@ pqxx::result PostgresConnection::execute_prepared(const std::string& name, Args&
 
 pqxx::connection& PostgresConnection::raw() {
     if (!IsConnected()) {
-      throw std::runtime_error("[DBConnection]: is not connected");
+        throw std::runtime_error("[DBConnection]: is not connected");
     }
     return *connection_;
 }

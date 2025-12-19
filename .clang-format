@@ -1,0 +1,59 @@
+# ============================================================
+# clang-format configuration
+# ============================================================
+
+BasedOnStyle: LLVM
+Standard: c++20
+
+# ------------------------------------------------------------
+# Indentation
+# ------------------------------------------------------------
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+NamespaceIndentation: All
+IndentAccessModifiers: false
+IndentCaseLabels: true
+IndentExternBlock: AfterExternBlock
+
+# ------------------------------------------------------------
+# Braces
+# ------------------------------------------------------------
+BreakBeforeBraces: Attach
+BraceWrapping:
+  AfterClass: false
+  AfterStruct: false
+  AfterNamespace: false
+  AfterFunction: false
+  BeforeElse: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+
+# ------------------------------------------------------------
+# Classes & Functions
+# ------------------------------------------------------------
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AlwaysBreakAfterDefinitionReturnType: None
+
+# ------------------------------------------------------------
+# Line length
+# ------------------------------------------------------------
+ColumnLimit: 100
+
+# ------------------------------------------------------------
+# Includes
+# ------------------------------------------------------------
+SortIncludes: true
+IncludeBlocks: Regroup
+
+# ------------------------------------------------------------
+# Misc
+# ------------------------------------------------------------
+PointerAlignment: Left
+ReferenceAlignment: Left
+SpacesInParentheses: false
+SpaceBeforeParens: ControlStatements

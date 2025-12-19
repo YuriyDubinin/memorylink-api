@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <string>
 #include <pqxx/pqxx>
+#include <string>
 
 class PostgresConnection {
 public:

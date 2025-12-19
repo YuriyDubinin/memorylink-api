@@ -1,7 +1,8 @@
 #include "json_guard.hpp"
 
 namespace utils::guard {
-    bool parse_json(const httplib::Request& req, httplib::Response& res, rapidjson::Document& out_doc) {
+    bool parse_json(const httplib::Request& req, httplib::Response& res,
+                    rapidjson::Document& out_doc) {
         if (out_doc.Parse(req.body.c_str()).HasParseError()) {
             utils::http_response::send_json_response(res, "ERROR", 400, "Invalid JSON");
             return false;
@@ -14,6 +15,4 @@ namespace utils::guard {
 
         return true;
     }
-}
-
-
+} // namespace utils::guard

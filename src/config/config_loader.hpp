@@ -1,11 +1,12 @@
 #pragma once
 
-#include <cstdio>
-#include <string>
-#include <iostream>
+#include "models/config.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
-#include "models/config.hpp"
+
+#include <cstdio>
+#include <iostream>
+#include <string>
 
 class ConfigLoader {
 public:

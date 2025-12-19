@@ -1,13 +1,13 @@
 #pragma once
 
-#include <iostream>
-#include <string>
 #include <httplib/httplib.h>
+#include <iostream>
 #include <rapidjson/document.h>
-#include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
-#include <validators/user.hpp>
+#include <rapidjson/writer.h>
+#include <string>
 #include <utils/http_response.h>
+#include <validators/user.hpp>
 
 class HttpServer {
 public:

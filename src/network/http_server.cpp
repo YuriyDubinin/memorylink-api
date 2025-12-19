@@ -1,7 +1,6 @@
 #include "http_server.hpp"
 
-HttpServer::HttpServer(const std::string& host, int port)
-    : host_(host), port_(port) {}
+HttpServer::HttpServer(const std::string& host, int port) : host_(host), port_(port) {}
 
 void HttpServer::Init() {
     SetupRoutes_();
@@ -9,7 +8,7 @@ void HttpServer::Init() {
 }
 
 void HttpServer::SetupRoutes_() {
-    server_.Post("/user/check", [](const httplib::Request&req, httplib::Response& res){
+    server_.Post("/user/check", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
 
         rapidjson::Document body_json;
@@ -20,7 +19,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validators:: validate_user_check(body_json, error_msg)) {
+        if (!validators::validate_user_check(body_json, error_msg)) {
             utils::http_response::send_json_response(res, "ERROR", 400, error_msg);
             return;
         }
@@ -29,7 +28,7 @@ void HttpServer::SetupRoutes_() {
     });
 
     // Options
-    server_.Options("/user/check", [](const httplib::Request&, httplib::Response& res){
+    server_.Options("/user/check", [](const httplib::Request&, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
         res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         res.set_header("Access-Control-Allow-Headers", "Content-Type");
@@ -37,9 +36,7 @@ void HttpServer::SetupRoutes_() {
     });
 }
 
-
 void HttpServer::Run() {
-    std::cout << "[HTTPServer]: started, "
-              << host_ << ":" << port_ << std::endl;
+    std::cout << "[HTTPServer]: started, " << host_ << ":" << port_ << std::endl;
     server_.listen(host_, port_);
 }
