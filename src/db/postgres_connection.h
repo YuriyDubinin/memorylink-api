@@ -12,6 +12,8 @@ public:
     PostgresConnection(const PostgresConnection&) = delete;
     PostgresConnection& operator=(const PostgresConnection&) = delete;
 
+    void Init(std::string& connection_info);
+
     bool IsConnected() const;
 
     pqxx::result Execute(const std::string& query);

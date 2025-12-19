@@ -39,7 +39,7 @@ Config ConfigLoader::Load(const std::string& filename) {
 
     // DB
     if (doc.HasMember("db") && doc["db"].IsString()) {
-        cfg.upload_path = doc["db"].GetString();
+        cfg.db = doc["db"].GetString();
     } else {
         throw std::runtime_error("[ConfigLoader]: Missing or invalid 'db' in config");
     }
