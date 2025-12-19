@@ -16,14 +16,14 @@ public:
 
     bool IsConnected() const;
 
-    pqxx::result Execute(const std::string& query);
+    pqxx::result execute(const std::string& query);
 
-    void Prepare(const std::string& name, const std::string& query);
+    void prepare(const std::string& name, const std::string& query);
 
     template <typename... Args>
     pqxx::result execute_prepared(const std::string& name, Args&&... args);
 
-    pqxx::connection& Raw();
+    pqxx::connection& raw();
 
 private:
     std::unique_ptr<pqxx::connection> connection_;
