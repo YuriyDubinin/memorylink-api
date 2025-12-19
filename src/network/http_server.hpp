@@ -7,7 +7,7 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 #include <validators/user.hpp>
-#include <utils/http_response.hpp>
+#include <utils/http_response.h>
 
 class HttpServer {
 public:

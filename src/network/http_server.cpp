@@ -16,18 +16,19 @@ void HttpServer::SetupRoutes_() {
         std::string error_msg;
 
         if (body_json.Parse(req.body.c_str()).HasParseError()) {
-            utils::http_response::SendJsonResponse(res, "ERROR", 400, "Invalid JSON");
+            utils::http_response::send_json_response(res, "ERROR", 400, "Invalid JSON");
             return;
         }
 
         if (!validators::ValidateUserCheck(body_json, error_msg)) {
-            utils::http_response::SendJsonResponse(res, "ERROR", 400, error_msg);
+            utils::http_response::send_json_response(res, "ERROR", 400, error_msg);
             return;
         }
 
-        utils::http_response::SendJsonResponse(res, "SUCCESS", 200, "Success");
+        utils::http_response::send_json_response(res, "SUCCESS", 200, "Success");
     });
 
+    // Options
     server_.Options("/user/check", [](const httplib::Request&, httplib::Response& res){
         res.set_header("Access-Control-Allow-Origin", "*");
         res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");

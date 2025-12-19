@@ -1,18 +1,12 @@
-#pragma once
-
-#include <httplib/httplib.h>
-#include <rapidjson/document.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/writer.h>
-#include <string>
+#include "http_response.h";
 
 namespace utils::http_response {
-
-    inline void SendJsonResponse(httplib::Response& res,
-                                 const std::string& status,
-                                 int code,
-                                 const std::string& message,
-                                 const rapidjson::Value& data = rapidjson::Value(rapidjson::kObjectType)) {
+    void send_json_response(httplib::Response& res,
+                            const std::string& status,
+                            const int& code,
+                            const std::string& message,
+                            const rapidjson::Value& data)
+    {
         rapidjson::Document doc;
         doc.SetObject();
         auto& allocator = doc.GetAllocator();
@@ -29,5 +23,4 @@ namespace utils::http_response {
         res.status = code;
         res.set_content(buffer.GetString(), "application/json");
     }
-
 }

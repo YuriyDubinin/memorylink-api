@@ -1,7 +1,6 @@
 #include <iostream>
 #include <network/http_server.hpp>
 #include <config/config_loader.hpp>
-#include <network/http_server.hpp>
 #include <models/config.hpp>
 
 int main() {
