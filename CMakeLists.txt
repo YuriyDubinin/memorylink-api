@@ -56,13 +56,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # =========================
 # Исходные файлы
 # =========================
-file(GLOB_RECURSE CONFIG_SOURCE     src/config/*.cpp)
-file(GLOB_RECURSE NETWORK_SOURCE    src/network/*.cpp)
+file(GLOB_RECURSE CONFIG_SOURCE src/config/*.cpp)
+file(GLOB_RECURSE NETWORK_SOURCE src/network/*.cpp)
 file(GLOB_RECURSE VALIDATORS_SOURCE src/validators/*.cpp)
-file(GLOB_RECURSE SERVICES_SOURCE   src/services/*.cpp)
-file(GLOB_RECURSE MODELS_SOURCE     src/models/*.cpp)
-file(GLOB_RECURSE UTILS_SOURCE      src/utils/*.cpp)
-file(GLOB_RECURSE DB_SOURCE         src/db/*.cpp)
+file(GLOB_RECURSE SERVICES_SOURCE src/services/*.cpp)
+file(GLOB_RECURSE MODELS_SOURCE src/models/*.cpp)
+file(GLOB_RECURSE UTILS_SOURCE src/utils/*.cpp)
+file(GLOB_RECURSE REPOSITORIES_SOURCE src/utils/*.cpp)
+file(GLOB_RECURSE DB_SOURCE src/db/*.cpp)
 
 add_executable(memorylink_api
         src/main.cpp
@@ -72,6 +73,7 @@ add_executable(memorylink_api
         ${SERVICES_SOURCE}
         ${MODELS_SOURCE}
         ${UTILS_SOURCE}
+        ${REPOSITORIES_SOURCE}
         ${DB_SOURCE}
 )
 
