@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # =========================
-# vcpkg toolchain (локальный)
+# vcpkg toolchain
 # =========================
 if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(
