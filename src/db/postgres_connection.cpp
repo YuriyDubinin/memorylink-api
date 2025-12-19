@@ -41,7 +41,7 @@ void PostgresConnection::prepare(const std::string& name, const std::string& que
       throw std::runtime_error("[DBConnection]: is not connected");
     }
 
-    connection_->Prepare(name, query);
+    connection_->prepare(name, query);
 }
 
 template <typename... Args>
