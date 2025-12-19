@@ -2,6 +2,8 @@
 
 #include <httplib/httplib.h>
 #include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 #include <string>
 
 namespace utils::http_response {

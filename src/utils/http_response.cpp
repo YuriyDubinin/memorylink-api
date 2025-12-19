@@ -1,4 +1,4 @@
-#include "http_response.h";
+#include "http_response.h"
 
 namespace utils::http_response {
     void send_json_response(httplib::Response& res,
