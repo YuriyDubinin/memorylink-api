@@ -19,7 +19,7 @@ Config ConfigLoader::Load(const std::string& filename) {
 
     Config cfg;
 
-    // Парс http
+    // HTTP
     if (doc.HasMember("http") && doc["http"].IsObject()) {
         const auto& http = doc["http"];
         if (http.HasMember("host") && http["host"].IsString()) {
@@ -37,11 +37,11 @@ Config ConfigLoader::Load(const std::string& filename) {
         throw std::runtime_error("[ConfigLoader]: Missing 'http' section in config");
     }
 
-    // Парс пути загрузки файлов
-    if (doc.HasMember("upload_path") && doc["upload_path"].IsString()) {
-        cfg.upload_path = doc["upload_path"].GetString();
+    // DB
+    if (doc.HasMember("db") && doc["db"].IsString()) {
+        cfg.upload_path = doc["db"].GetString();
     } else {
-        cfg.upload_path = "uploads/"; // по умолчанию
+        throw std::runtime_error("[ConfigLoader]: Missing or invalid 'db' in config");
     }
 
     // Логирование успешной загрузки
