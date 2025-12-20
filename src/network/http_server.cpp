@@ -14,8 +14,8 @@ void HttpServer::SetupRoutes_() {
         res.set_header("Access-Control-Allow-Origin", "*");
 
         rapidjson::Document body_json;
-        std::string error_msg;
-        ApiResponse api_response;
+        std::string         error_msg;
+        ApiResponse         api_response;
 
         if (!validate::json(req, res, body_json, error_msg)) {
             utils::http_response::send_json_response(res, "ERROR", 400, error_msg);

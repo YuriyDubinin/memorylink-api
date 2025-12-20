@@ -4,6 +4,6 @@
 
 struct Config {
     std::string host;
-    int port;
+    int         port;
     std::string db;
 };

@@ -12,7 +12,7 @@ namespace utils::http_response {
         doc.AddMember("message", rapidjson::Value(message.c_str(), allocator), allocator);
         doc.AddMember("data", rapidjson::Value(data, allocator), allocator);
 
-        rapidjson::StringBuffer buffer;
+        rapidjson::StringBuffer                    buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
         doc.Accept(writer);
 

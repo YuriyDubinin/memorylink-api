@@ -9,7 +9,7 @@ public:
     explicit PostgresConnection(const std::string& connection_info);
     ~PostgresConnection() = default;
 
-    PostgresConnection(const PostgresConnection&) = delete;
+    PostgresConnection(const PostgresConnection&)            = delete;
     PostgresConnection& operator=(const PostgresConnection&) = delete;
 
     void Check() const;

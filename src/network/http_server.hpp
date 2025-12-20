@@ -22,6 +22,6 @@ private:
     void SetupRoutes_();
 
     httplib::Server server_;
-    std::string host_;
-    int port_;
+    std::string     host_;
+    int             port_;
 };

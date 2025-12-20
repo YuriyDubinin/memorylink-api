@@ -6,7 +6,7 @@ Config ConfigLoader::Load(const std::string& filename) {
         throw std::runtime_error("[ConfigLoader]: Cannot open config file: " + filename);
     }
 
-    char readBuffer[65536];
+    char                      readBuffer[65536];
     rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
 
     rapidjson::Document doc;

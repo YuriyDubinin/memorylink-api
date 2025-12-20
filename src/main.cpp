@@ -6,9 +6,9 @@
 
 int main() {
     try {
-        const Config cfg = ConfigLoader::Load("config.json");
+        const Config       cfg = ConfigLoader::Load("config.json");
         PostgresConnection db(cfg.db);
-        HttpServer server(cfg.host, cfg.port);
+        HttpServer         server(cfg.host, cfg.port);
 
         db.Check();
         server.Init();

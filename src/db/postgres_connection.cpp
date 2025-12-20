@@ -37,7 +37,7 @@ pqxx::result PostgresConnection::execute(const std::string& query) {
         throw std::runtime_error("[DBConnection]: is not connected");
     }
 
-    pqxx::work tx(*connection_);
+    pqxx::work   tx(*connection_);
     pqxx::result res = tx.exec(query);
     tx.commit();
 
@@ -58,7 +58,7 @@ pqxx::result PostgresConnection::execute_prepared(const std::string& name, Args&
         throw std::runtime_error("[DBConnection]: is not connected");
     }
 
-    pqxx::work tx(*connection_);
+    pqxx::work   tx(*connection_);
     pqxx::result res = tx.exec_prepared(name, std::forward<Args>(args)...);
     tx.commit();
 

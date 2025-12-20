@@ -58,3 +58,9 @@ ReferenceAlignment: Left
 SpacesInParentheses: false
 SpaceBeforeParens: ControlStatements
 
+# ------------------------------------------------------------
+# Alignment
+# ------------------------------------------------------------
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
