@@ -2,13 +2,14 @@
 
 #include <httplib/httplib.h>
 #include <iostream>
+#include <models/api_response.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <string>
 #include <utils/http_response.h>
-#include <utils/validate_json.hpp>
-#include <utils/check_token.hpp>
+#include <validators/json.hpp>
+#include <validators/token.hpp>
 #include <validators/user.hpp>
 
 class HttpServer {

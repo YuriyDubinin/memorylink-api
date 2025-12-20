@@ -334,7 +334,7 @@ struct SchemaValidationContext {
         invalidKeyword(),
         hasher(),
         arrayElementHashCodes(),
-        validators(),
+        validate(),
         validatorCount(),
         patternPropertiesValidators(),
         patternPropertiesValidatorCount(),
@@ -351,10 +351,10 @@ struct SchemaValidationContext {
     ~SchemaValidationContext() {
         if (hasher)
             factory.DestroryHasher(hasher);
-        if (validators) {
+        if (validate) {
             for (SizeType i = 0; i < validatorCount; i++)
-                factory.DestroySchemaValidator(validators[i]);
-            factory.FreeState(validators);
+                factory.DestroySchemaValidator(validate[i]);
+            factory.FreeState(validate);
         }
         if (patternPropertiesValidators) {
             for (SizeType i = 0; i < patternPropertiesValidatorCount; i++)
@@ -374,7 +374,7 @@ struct SchemaValidationContext {
     const Ch* invalidKeyword;
     void* hasher; // Only validator access
     void* arrayElementHashCodes; // Only validator access this
-    ISchemaValidator** validators;
+    ISchemaValidator** validate;
     SizeType validatorCount;
     ISchemaValidator** patternPropertiesValidators;
     SizeType patternPropertiesValidatorCount;
@@ -743,16 +743,16 @@ public:
 
         if (allOf_.schemas)
             for (SizeType i = allOf_.begin; i < allOf_.begin + allOf_.count; i++)
-                if (!context.validators[i]->IsValid()) {
-                    context.error_handler.NotAllOf(&context.validators[allOf_.begin], allOf_.count);
+                if (!context.validate[i]->IsValid()) {
+                    context.error_handler.NotAllOf(&context.validate[allOf_.begin], allOf_.count);
                     RAPIDJSON_INVALID_KEYWORD_RETURN(GetAllOfString());
                 }
         
         if (anyOf_.schemas) {
             for (SizeType i = anyOf_.begin; i < anyOf_.begin + anyOf_.count; i++)
-                if (context.validators[i]->IsValid())
+                if (context.validate[i]->IsValid())
                     goto foundAny;
-            context.error_handler.NoneOf(&context.validators[anyOf_.begin], anyOf_.count);
+            context.error_handler.NoneOf(&context.validate[anyOf_.begin], anyOf_.count);
             RAPIDJSON_INVALID_KEYWORD_RETURN(GetAnyOfString());
             foundAny:;
         }
@@ -760,20 +760,20 @@ public:
         if (oneOf_.schemas) {
             bool oneValid = false;
             for (SizeType i = oneOf_.begin; i < oneOf_.begin + oneOf_.count; i++)
-                if (context.validators[i]->IsValid()) {
+                if (context.validate[i]->IsValid()) {
                     if (oneValid) {
-                        context.error_handler.NotOneOf(&context.validators[oneOf_.begin], oneOf_.count);
+                        context.error_handler.NotOneOf(&context.validate[oneOf_.begin], oneOf_.count);
                         RAPIDJSON_INVALID_KEYWORD_RETURN(GetOneOfString());
                     } else
                         oneValid = true;
                 }
             if (!oneValid) {
-                context.error_handler.NotOneOf(&context.validators[oneOf_.begin], oneOf_.count);
+                context.error_handler.NotOneOf(&context.validate[oneOf_.begin], oneOf_.count);
                 RAPIDJSON_INVALID_KEYWORD_RETURN(GetOneOfString());
             }
         }
 
-        if (not_ && context.validators[notValidatorIndex_]->IsValid()) {
+        if (not_ && context.validate[notValidatorIndex_]->IsValid()) {
             context.error_handler.Disallowed();
             RAPIDJSON_INVALID_KEYWORD_RETURN(GetNotString());
         }
@@ -971,7 +971,7 @@ public:
                         context.error_handler.EndMissingDependentProperties(source.name);
                     }
                     else if (source.dependenciesSchema) {
-                        ISchemaValidator* dependenciesValidator = context.validators[source.dependenciesValidatorIndex];
+                        ISchemaValidator* dependenciesValidator = context.validate[source.dependenciesValidatorIndex];
                         if (!dependenciesValidator->IsValid())
                             context.error_handler.AddDependencySchemaError(source.name, dependenciesValidator);
                     }
@@ -1081,7 +1081,7 @@ private:
         SchemaArray() : schemas(), count() {}
         ~SchemaArray() { AllocatorType::Free(schemas); }
         const SchemaType** schemas;
-        SizeType begin; // begin index of context.validators
+        SizeType begin; // begin index of context.validate
         SizeType count;
     };
 
@@ -1186,8 +1186,8 @@ private:
             context.hasher = context.factory.CreateHasher();
 
         if (validatorCount_) {
-            RAPIDJSON_ASSERT(context.validators == 0);
-            context.validators = static_cast<ISchemaValidator**>(context.factory.MallocState(sizeof(ISchemaValidator*) * validatorCount_));
+            RAPIDJSON_ASSERT(context.validate == 0);
+            context.validate = static_cast<ISchemaValidator**>(context.factory.MallocState(sizeof(ISchemaValidator*) * validatorCount_));
             context.validatorCount = validatorCount_;
 
             if (allOf_.schemas)
@@ -1200,12 +1200,12 @@ private:
                 CreateSchemaValidators(context, oneOf_);
             
             if (not_)
-                context.validators[notValidatorIndex_] = context.factory.CreateSchemaValidator(*not_);
+                context.validate[notValidatorIndex_] = context.factory.CreateSchemaValidator(*not_);
             
             if (hasSchemaDependencies_) {
                 for (SizeType i = 0; i < propertyCount_; i++)
                     if (properties_[i].dependenciesSchema)
-                        context.validators[properties_[i].dependenciesValidatorIndex] = context.factory.CreateSchemaValidator(*properties_[i].dependenciesSchema);
+                        context.validate[properties_[i].dependenciesValidatorIndex] = context.factory.CreateSchemaValidator(*properties_[i].dependenciesSchema);
             }
         }
 
@@ -1214,7 +1214,7 @@ private:
 
     void CreateSchemaValidators(Context& context, const SchemaArray& schemas) const {
         for (SizeType i = 0; i < schemas.count; i++)
-            context.validators[schemas.begin + i] = context.factory.CreateSchemaValidator(*schemas.schemas[i]);
+            context.validate[schemas.begin + i] = context.factory.CreateSchemaValidator(*schemas.schemas[i]);
     }
 
     // O(n)
@@ -2084,9 +2084,9 @@ RAPIDJSON_MULTILINEMACRO_END
     for (Context* context = schemaStack_.template Bottom<Context>(); context != schemaStack_.template End<Context>(); context++) {\
         if (context->hasher)\
             static_cast<HasherType*>(context->hasher)->method arg2;\
-        if (context->validators)\
+        if (context->validate)\
             for (SizeType i_ = 0; i_ < context->validatorCount; i_++)\
-                static_cast<GenericSchemaValidator*>(context->validators[i_])->method arg2;\
+                static_cast<GenericSchemaValidator*>(context->validate[i_])->method arg2;\
         if (context->patternPropertiesValidators)\
             for (SizeType i_ = 0; i_ < context->patternPropertiesValidatorCount; i_++)\
                 static_cast<GenericSchemaValidator*>(context->patternPropertiesValidators[i_])->method arg2;\

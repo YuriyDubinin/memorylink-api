@@ -1,6 +1,6 @@
 #pragma once
 
-#include "models/config.hpp"
+#include "models/config.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 

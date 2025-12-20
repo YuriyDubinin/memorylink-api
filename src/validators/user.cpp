@@ -1,7 +1,7 @@
 #include "user.hpp"
 
-namespace validators {
-    bool validate_user_check(const rapidjson::Document& body, std::string& error) {
+namespace validate {
+    bool user_check(const rapidjson::Document& body, std::string& error) {
         if (!body.HasMember("key")) {
             error = "Missing 'key'";
             return false;
@@ -12,4 +12,4 @@ namespace validators {
         }
         return true;
     }
-} // namespace validators
+} // namespace validate

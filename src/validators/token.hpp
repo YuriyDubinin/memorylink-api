@@ -7,7 +7,7 @@
 #include <string>
 #include <utils/http_response.h>
 
-namespace utils::guard {
-    bool validate_json(const httplib::Request& req, httplib::Response& res,
-                    rapidjson::Document& body, std::string& error_msg);
+namespace validate {
+    bool token(const rapidjson::Document& body_json, httplib::Response& res,
+               std::string& error_msg);
 }

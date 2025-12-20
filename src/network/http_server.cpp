@@ -1,5 +1,7 @@
 #include "http_server.hpp"
 
+#include "validators/token.hpp"
+
 HttpServer::HttpServer(const std::string& host, int port) : host_(host), port_(port) {}
 
 void HttpServer::Init() {
@@ -13,13 +15,19 @@ void HttpServer::SetupRoutes_() {
 
         rapidjson::Document body_json;
         std::string error_msg;
+        ApiResponse api_response;
 
-        if (!utils::guard::validate_json(req, res, body_json, error_msg)) {
+        if (!validate::json(req, res, body_json, error_msg)) {
             utils::http_response::send_json_response(res, "ERROR", 400, error_msg);
             return;
         }
 
-        if (!validators::validate_user_check(body_json, error_msg)) {
+        if (!validate::token(body_json, res, error_msg)) {
+            utils::http_response::send_json_response(res, "ERROR", 400, error_msg);
+            return;
+        }
+
+        if (!validate::user_check(body_json, error_msg)) {
             utils::http_response::send_json_response(res, "ERROR", 400, error_msg);
             return;
         }

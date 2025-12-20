@@ -1,8 +1,8 @@
-#include "validate_json.hpp"
+#include "json.hpp"
 
-namespace utils::guard {
-    bool validate_json(const httplib::Request& req, httplib::Response& res,
-                    rapidjson::Document& out_doc, std::string& error_msg) {
+namespace validate {
+    bool json(const httplib::Request& req, httplib::Response& res, rapidjson::Document& out_doc,
+              std::string& error_msg) {
         if (out_doc.Parse(req.body.c_str()).HasParseError()) {
             error_msg = "Invalid JSON";
             return false;
@@ -15,4 +15,4 @@ namespace utils::guard {
 
         return true;
     }
-} // namespace utils::guard
+} // namespace validate

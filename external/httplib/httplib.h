@@ -2974,7 +2974,7 @@ inline std::string compute_etag(const FileStat &fs) {
   // If mtime cannot be determined (negative value indicates an error
   // or sentinel), do not generate an ETag. Returning a neutral / fixed
   // value like 0 could collide with a real file that legitimately has
-  // mtime == 0 (epoch) and lead to misleading validators.
+  // mtime == 0 (epoch) and lead to misleading validate.
   auto mtime_raw = fs.mtime();
   if (mtime_raw < 0) { return std::string(); }
 

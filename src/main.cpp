@@ -1,7 +1,7 @@
 #include <config/config_loader.hpp>
 #include <db/postgres_connection.h>
 #include <iostream>
-#include <models/config.hpp>
+#include <models/config.h>
 #include <network/http_server.hpp>
 
 int main() {
