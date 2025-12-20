@@ -1,4 +1,4 @@
-#include <config/config_loader.hpp>
+#include <config/config_loader.h>
 
 Config ConfigLoader::Load(const std::string& filename) {
     FILE* fp = fopen(filename.c_str(), "r");

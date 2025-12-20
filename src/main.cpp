@@ -1,8 +1,8 @@
-#include <config/config_loader.hpp>
+#include <config/config_loader.h>
 #include <db/postgres_connection.h>
 #include <iostream>
 #include <models/config.h>
-#include <network/http_server.hpp>
+#include <network/http_server.h>
 
 int main() {
     try {

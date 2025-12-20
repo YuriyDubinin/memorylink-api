@@ -58,7 +58,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # =========================
 file(GLOB_RECURSE CONFIG_SOURCE src/config/*.cpp)
 file(GLOB_RECURSE NETWORK_SOURCE src/network/*.cpp)
-file(GLOB_RECURSE VALIDATORS_SOURCE src/validate/*.cpp)
+file(GLOB_RECURSE VALIDATORS_SOURCE src/validators/*.cpp)
 file(GLOB_RECURSE SERVICES_SOURCE src/services/*.cpp)
 file(GLOB_RECURSE MODELS_SOURCE src/models/*.cpp)
 file(GLOB_RECURSE UTILS_SOURCE src/utils/*.cpp)

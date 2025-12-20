@@ -1,6 +1,6 @@
-#include "token.hpp"
+#include "token.h"
 
-namespace utils::guard {
+namespace validate {
     constexpr std::string EXPECTED_TOKEN = "SECRET_TOKEN";
 
     bool token(const rapidjson::Document& body_json, httplib::Response& res,

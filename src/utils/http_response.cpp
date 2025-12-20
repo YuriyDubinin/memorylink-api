@@ -1,8 +1,8 @@
 #include "http_response.h"
 
 namespace utils::http_response {
-    void send_json_response(httplib::Response& res, const std::string& status, const int& code,
-                            const std::string& message, const rapidjson::Value& data) {
+    void send(httplib::Response& res, const std::string& status, const int& code,
+              const std::string& message, const rapidjson::Value& data) {
         rapidjson::Document doc;
         doc.SetObject();
         auto& allocator = doc.GetAllocator();

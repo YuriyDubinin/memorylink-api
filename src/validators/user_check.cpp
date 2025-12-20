@@ -1,4 +1,4 @@
-#include "user.hpp"
+#include "user_check.h"
 
 namespace validate {
     bool user_check(const rapidjson::Document& body, std::string& error) {
