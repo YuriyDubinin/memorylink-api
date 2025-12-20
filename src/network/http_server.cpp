@@ -11,7 +11,7 @@ void HttpServer::Init() {
 }
 
 void HttpServer::SetupRoutes_() {
-    server_.Post("/user/check", [](const httplib::Request& req, httplib::Response& res) {
+    server_.Post("/user/auth", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
 
         rapidjson::Document body_json;
@@ -23,6 +23,12 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
+        if (!validate::auth(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        // TODO: service logic
         utils::http_response::send(res, api_response);
     });
 

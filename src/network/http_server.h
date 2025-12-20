@@ -8,9 +8,9 @@
 #include <rapidjson/writer.h>
 #include <string>
 #include <utils/http_response.h>
+#include <validators/auth.h>
 #include <validators/json.h>
 #include <validators/token.h>
-#include <validators/user_check.h>
 
 class HttpServer {
 public:
