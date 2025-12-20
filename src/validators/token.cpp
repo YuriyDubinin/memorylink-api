@@ -1,7 +1,7 @@
 #include "token.h"
 
 namespace validate {
-    constexpr std::string EXPECTED_TOKEN = "SECRET_TOKEN";
+    const std::string EXPECTED_TOKEN = "SECRET_TOKEN";
 
     bool token(const rapidjson::Document& body_json, ApiResponse& api_response) {
         if (!body_json.HasMember("token")) {
