@@ -64,3 +64,10 @@ SpaceBeforeParens: ControlStatements
 AlignConsecutiveDeclarations: true
 AlignConsecutiveAssignments: true
 AlignConsecutiveBitFields: true
+
+# ------------------------------------------------------------
+# Parameters formatting
+# ------------------------------------------------------------
+BinPackParameters: false
+BinPackArguments: false
+AllowAllParametersOfDeclarationOnNextLine: false

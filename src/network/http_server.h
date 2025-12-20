@@ -2,6 +2,7 @@
 
 #include <httplib/httplib.h>
 #include <iostream>
+#include <models/api_response.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>

@@ -1,15 +1,19 @@
 #include "json.h"
 
 namespace validate {
-    bool json(const httplib::Request& req, httplib::Response& res, rapidjson::Document& out_doc,
-              std::string& error_msg) {
-        if (out_doc.Parse(req.body.c_str()).HasParseError()) {
-            error_msg = "Invalid JSON";
+    bool
+    json(const httplib::Request& req, rapidjson::Document& body_json, ApiResponse& api_response) {
+        if (body_json.Parse(req.body.c_str()).HasParseError()) {
+            api_response.status = "ERROR";
+            api_response.code   = 400;
+            api_response.msg    = "Invalid JSON";
             return false;
         }
 
-        if (!out_doc.IsObject()) {
-            error_msg = "JSON must be an object";
+        if (!body_json.IsObject()) {
+            api_response.status = "ERROR";
+            api_response.code   = 400;
+            api_response.msg    = "JSON must be an object";
             return false;
         }
 
