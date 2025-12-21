@@ -1,12 +1,14 @@
 #pragma once
 
-#include <httplib/httplib.h>
 #include <iostream>
-#include <models/api_response.h>
+#include <string>
+
+#include <httplib/httplib.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
-#include <string>
+
+#include <models/api_response.h>
 #include <utils/http_response.h>
 #include <validators/auth.h>
 #include <validators/json.h>

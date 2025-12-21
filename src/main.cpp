@@ -1,6 +1,7 @@
+#include <iostream>
+
 #include <config/config_loader.h>
 #include <db/postgres_connection.h>
-#include <iostream>
 #include <models/config.h>
 #include <network/http_server.h>
 

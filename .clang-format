@@ -50,6 +50,24 @@ ColumnLimit: 100
 SortIncludes: true
 IncludeBlocks: Regroup
 
+IncludeCategories:
+  # 1️⃣ STL
+  - Regex: '^<([a-z_]+)>'
+    Priority: 1
+
+  # 2️⃣ Third-party libraries
+  - Regex: '^<(httplib|rapidjson)/'
+    Priority: 2
+
+  # 3️⃣ Project headers
+  - Regex: '^<(models|utils|validators|services|db|network|config)/'
+    Priority: 3
+
+  # 4️⃣ Fallback
+  - Regex: '.*'
+    Priority: 4
+
+
 # ------------------------------------------------------------
 # Misc
 # ------------------------------------------------------------
