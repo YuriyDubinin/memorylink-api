@@ -17,7 +17,12 @@ void UserService::Auth() {
 
     if (user_entity &&
         utils::security::verify_password(login, password, user_entity->password_hash)) {
-        const std::string token = GenerateToken_();
+
+        AccessTokenData access_token_data;
+        access_token_data.id = user_entity->id;
+        access_token_data.family_id = user_entity->family_id;
+
+        const std::string token = GenerateToken_(access_token_data);
 
         api_response_.status = "OK";
         api_response_.code   = 200;
@@ -35,6 +40,21 @@ void UserService::Auth() {
 
 void UserService::Get() {}
 
-std::string UserService::GenerateToken_() const {
-    return "SECRET_TOKEN";
+std::string UserService::GenerateToken_(AccessTokenData& access_token_data) const {
+    // TTL = текущее время + 24 часа (в секундах)
+    access_token_data.ttl =
+        std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+        ).count()
+        + 24 * 60 * 60;
+
+    const Config&      cfg = ConfigManager::Get();
+    static const std::string TOKEN_KEY  = cfg.pepper;
+    static const std::string TOKEN_SALT = cfg.salt;
+
+    return utils::security::encrypt_access_token_struct(
+        access_token_data,
+        TOKEN_KEY,
+        TOKEN_SALT
+    );
 }

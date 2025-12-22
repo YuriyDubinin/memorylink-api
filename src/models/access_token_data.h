@@ -1,11 +1,10 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
-struct AccessToken {
+struct AccessTokenData {
     std::int64_t id;
-    std::string  full_name;
-    std::string  password_hash;
     std::int64_t family_id;
     std::int64_t ttl;
 };
