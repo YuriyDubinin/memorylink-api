@@ -45,7 +45,7 @@ void HttpServer::SetupRoutes_() {
         }
 
         UserService user_service(res, body_json, api_response);
-        user_service.Get();
+        user_service.GetById();
     });
 
     // Options

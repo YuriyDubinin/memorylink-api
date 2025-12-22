@@ -19,13 +19,9 @@ namespace validate {
         const std::string encrypted_token = body_json["access_token"].GetString();
 
         try {
-            const Config& cfg = ConfigManager::Get();
+            const Config&   cfg = ConfigManager::Get();
             AccessTokenData token_data =
-                utils::security::decrypt_access_token_struct(
-                    encrypted_token,
-                    cfg.pepper,
-                    cfg.salt
-                );
+                utils::security::decrypt_access_token_struct(encrypted_token, cfg.pepper, cfg.salt);
 
             if (body_json["id"].GetInt() != token_data.id) {
                 api_response.status = "ERROR";

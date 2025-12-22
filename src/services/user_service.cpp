@@ -14,12 +14,11 @@ void UserService::Auth() {
     auto& allocator = data.GetAllocator();
 
     auto user_entity = DBRegistry::Users().GetByEmail(login);
-
     if (user_entity &&
         utils::security::verify_password(login, password, user_entity->password_hash)) {
 
         AccessTokenData access_token_data;
-        access_token_data.id = user_entity->id;
+        access_token_data.id        = user_entity->id;
         access_token_data.family_id = user_entity->family_id;
 
         const std::string token = GenerateToken_(access_token_data);
@@ -38,23 +37,57 @@ void UserService::Auth() {
     utils::http_response::send(res_, api_response_, data);
 }
 
-void UserService::Get() {}
+void UserService::GetById() {
+    const int id = body_json_["id"].GetInt();
+
+    rapidjson::Document data;
+    data.SetObject();
+    auto& allocator = data.GetAllocator();
+
+    auto user_entity = DBRegistry::Users().GetById(id);
+    if (user_entity) {
+        api_response_.status = "OK";
+        api_response_.code   = 200;
+        api_response_.msg    = "Success";
+
+        data.AddMember("id", user_entity->id, allocator);
+        data.AddMember("is_active", user_entity->is_active, allocator);
+        data.AddMember(
+            "full_name", rapidjson::Value(user_entity->full_name.c_str(), allocator), allocator);
+        data.AddMember("email", rapidjson::Value(user_entity->email.c_str(), allocator), allocator);
+
+        if (user_entity->phone.has_value()) {
+            data.AddMember(
+                "phone", rapidjson::Value(user_entity->phone->c_str(), allocator), allocator);
+        } else {
+            data.AddMember("phone", rapidjson::Value(rapidjson::kNullType), allocator);
+        }
+
+        if (user_entity->address.has_value()) {
+            data.AddMember(
+                "address", rapidjson::Value(user_entity->address->c_str(), allocator), allocator);
+        } else {
+            data.AddMember("address", rapidjson::Value(rapidjson::kNullType), allocator);
+        }
+
+        data.AddMember("family_id", user_entity->family_id, allocator);
+    } else {
+        api_response_.status = "ERROR";
+        api_response_.code   = 401;
+        api_response_.msg    = "Invalid 'id";
+    }
+
+    utils::http_response::send(res_, api_response_, data);
+}
 
 std::string UserService::GenerateToken_(AccessTokenData& access_token_data) const {
     // TTL = текущее время + 24 часа (в секундах)
-    access_token_data.ttl =
-        std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-        ).count()
-        + 24 * 60 * 60;
+    access_token_data.ttl = std::chrono::duration_cast<std::chrono::seconds>(
+                                std::chrono::system_clock::now().time_since_epoch())
+                                .count() +
+                            24 * 60 * 60;
 
-    const Config&      cfg = ConfigManager::Get();
-    static const std::string TOKEN_KEY  = cfg.pepper;
-    static const std::string TOKEN_SALT = cfg.salt;
+    const Config& cfg = ConfigManager::Get();
 
-    return utils::security::encrypt_access_token_struct(
-        access_token_data,
-        TOKEN_KEY,
-        TOKEN_SALT
-    );
+    return utils::security::encrypt_access_token_struct(access_token_data, cfg.pepper, cfg.salt);
 }

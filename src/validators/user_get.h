@@ -6,11 +6,11 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
-#include <models/api_response.h>
-#include <utils/http_response.h>
-#include <models/access_token_data.h>
 #include <config/config_manager.h>
+#include <models/access_token_data.h>
+#include <models/api_response.h>
 #include <utils/access_token_crypto.h>
+#include <utils/http_response.h>
 
 namespace validate {
     bool user_get(const rapidjson::Document& body_json, ApiResponse& api_response);

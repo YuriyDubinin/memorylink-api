@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <chrono>
+#include <string>
 
 #include <httplib/httplib.h>
 #include <rapidjson/document.h>
@@ -10,6 +10,7 @@
 #include <db/db_registry.h>
 #include <models/access_token_data.h>
 #include <models/api_response.h>
+#include <models/user.h>
 #include <repositories/pg_user_repository.h>
 #include <utils/access_token_crypto.h>
 #include <utils/http_response.h>
@@ -22,7 +23,7 @@ public:
     ~UserService() = default;
 
     void Auth();
-    void Get();
+    void GetById();
 
 private:
     httplib::Response&   res_;

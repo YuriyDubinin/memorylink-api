@@ -111,8 +111,8 @@ namespace utils::security {
 
     // Сериализация структуры
     std::string encrypt_access_token_struct(const AccessTokenData& token,
-                                            const std::string& key,
-                                            const std::string& salt) {
+                                            const std::string&     key,
+                                            const std::string&     salt) {
         rapidjson::Document d;
         d.SetObject();
         auto& allocator = d.GetAllocator();
@@ -128,8 +128,8 @@ namespace utils::security {
     }
 
     AccessTokenData decrypt_access_token_struct(const std::string& encrypted_hex,
-                                            const std::string& key,
-                                            const std::string& salt) {
+                                                const std::string& key,
+                                                const std::string& salt) {
         std::string json_str = decrypt_bytes(encrypted_hex, key, salt);
 
         rapidjson::Document d;
@@ -138,9 +138,9 @@ namespace utils::security {
             throw std::runtime_error("Failed to parse decrypted JSON");
 
         AccessTokenData token;
-        token.id            = d["id"].GetInt64();
-        token.family_id     = d["family_id"].GetInt64();
-        token.ttl           = d["ttl"].GetInt64();
+        token.id        = d["id"].GetInt64();
+        token.family_id = d["family_id"].GetInt64();
+        token.ttl       = d["ttl"].GetInt64();
 
         return token;
     }

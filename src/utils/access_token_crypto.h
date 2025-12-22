@@ -17,11 +17,11 @@
 
 namespace utils::security {
     std::string encrypt_access_token_struct(const AccessTokenData& token,
-                                            const std::string& key,
-                                            const std::string& salt);
+                                            const std::string&     key,
+                                            const std::string&     salt);
 
     AccessTokenData decrypt_access_token_struct(const std::string& encrypted_hex,
-                                            const std::string& key,
-                                            const std::string& salt);
+                                                const std::string& key,
+                                                const std::string& salt);
 
 } // namespace utils::security
