@@ -28,7 +28,8 @@ bool PostgresConnection::IsConnected() const {
 pqxx::result PostgresConnection::execute(const std::string& query) {
     if (!IsConnected())
         throw std::runtime_error("[DBConnection]: is not connected");
-    pqxx::work   tx(*connection_);
+
+    pqxx::work tx(*connection_);
     pqxx::result res = tx.exec(query);
     tx.commit();
     return res;
@@ -37,11 +38,13 @@ pqxx::result PostgresConnection::execute(const std::string& query) {
 void PostgresConnection::prepare(const std::string& name, const std::string& query) {
     if (!IsConnected())
         throw std::runtime_error("[DBConnection]: is not connected");
-    connection_->prepare(name, query);
+
+    connection_->prepare(name, query); // регистрация подготовленного запроса
 }
 
 pqxx::connection& PostgresConnection::raw() {
     if (!IsConnected())
         throw std::runtime_error("[DBConnection]: is not connected");
+
     return *connection_;
 }

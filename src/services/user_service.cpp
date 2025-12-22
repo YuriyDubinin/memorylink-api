@@ -13,9 +13,9 @@ void UserService::Auth() {
     data.SetObject();
     auto& allocator = data.GetAllocator();
 
-    const std::string test_hash =
-        "2830fffac1e704d3c6256e13202583185401ba35909018e35039ae4fd9faf246";
-    if (utils::security::verify_password(login, password, test_hash)) {
+    auto user_entity = DBRegistry::Users().GetByEmail(login);
+
+    if (user_entity && utils::security::verify_password(login, password, user_entity->password_hash)) {
         const std::string token = GenerateToken_();
 
         api_response_.status = "OK";
