@@ -13,7 +13,6 @@ int main() {
         HttpServer         server(cfg.host, cfg.port);
 
         db.Check();
-        // Инициализация глобальных репозиториев
         DBRegistry::Init(db);
 
         server.Init();
