@@ -29,7 +29,7 @@ pqxx::result PostgresConnection::execute(const std::string& query) {
     if (!IsConnected())
         throw std::runtime_error("[DBConnection]: is not connected");
 
-    pqxx::work tx(*connection_);
+    pqxx::work   tx(*connection_);
     pqxx::result res = tx.exec(query);
     tx.commit();
     return res;

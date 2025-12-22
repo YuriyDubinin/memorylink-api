@@ -1,9 +1,28 @@
-#include <config/config_loader.h>
+#include <cstdio>
+#include <iostream>
+#include <stdexcept>
 
-Config ConfigLoader::Load(const std::string& filename) {
+#include "config/config_manager.h"
+#include "rapidjson/document.h"
+#include "rapidjson/filereadstream.h"
+
+void ConfigManager::Load(const std::string& filename) {
+    instance_().LoadConfig_(filename);
+}
+
+const Config& ConfigManager::Get() {
+    return instance_().cfg_;
+}
+
+ConfigManager& ConfigManager::instance_() {
+    static ConfigManager mgr;
+    return mgr;
+}
+
+void ConfigManager::LoadConfig_(const std::string& filename) {
     FILE* fp = fopen(filename.c_str(), "r");
     if (!fp) {
-        throw std::runtime_error("[ConfigLoader]: Cannot open config file: " + filename);
+        throw std::runtime_error("[ConfigManager]: Cannot open config file: " + filename);
     }
 
     char                      readBuffer[65536];
@@ -14,38 +33,47 @@ Config ConfigLoader::Load(const std::string& filename) {
     fclose(fp);
 
     if (doc.HasParseError()) {
-        throw std::runtime_error("[ConfigLoader]: JSON parse error in config file");
+        throw std::runtime_error("[ConfigManager]: JSON parse error in config file");
     }
-
-    Config cfg;
 
     // HTTP
     if (doc.HasMember("http") && doc["http"].IsObject()) {
         const auto& http = doc["http"];
         if (http.HasMember("host") && http["host"].IsString()) {
-            cfg.host = http["host"].GetString();
+            cfg_.host = http["host"].GetString();
         } else {
-            throw std::runtime_error("[ConfigLoader]: Missing or invalid 'host' in config");
+            throw std::runtime_error("[ConfigManager]: Missing or invalid 'host' in config");
         }
 
         if (http.HasMember("port") && http["port"].IsInt()) {
-            cfg.port = doc["http"]["port"].GetInt();
+            cfg_.port = http["port"].GetInt();
         } else {
-            throw std::runtime_error("[ConfigLoader]: Missing or invalid 'port' in config");
+            throw std::runtime_error("[ConfigManager]: Missing or invalid 'port' in config");
         }
     } else {
-        throw std::runtime_error("[ConfigLoader]: Missing 'http' section in config");
+        throw std::runtime_error("[ConfigManager]: Missing 'http' section in config");
     }
 
     // DB
     if (doc.HasMember("db") && doc["db"].IsString()) {
-        cfg.db = doc["db"].GetString();
+        cfg_.db = doc["db"].GetString();
     } else {
-        throw std::runtime_error("[ConfigLoader]: Missing or invalid 'db' in config");
+        throw std::runtime_error("[ConfigManager]: Missing or invalid 'db' in config");
     }
 
-    // Логирование успешной загрузки
-    std::cout << "[ConfigLoader]: Config successfully loaded" << std::endl;
+    // Pepper
+    if (doc.HasMember("pepper") && doc["pepper"].IsString()) {
+        cfg_.pepper = doc["pepper"].GetString();
+    } else {
+        throw std::runtime_error("[ConfigManager]: Missing or invalid 'pepper' in config");
+    }
 
-    return cfg;
+    // Salt
+    if (doc.HasMember("salt") && doc["salt"].IsString()) {
+        cfg_.salt = doc["salt"].GetString();
+    } else {
+        throw std::runtime_error("[ConfigManager]: Missing or invalid 'salt' in config");
+    }
+
+    std::cout << "[ConfigManager]: Config successfully loaded" << std::endl;
 }

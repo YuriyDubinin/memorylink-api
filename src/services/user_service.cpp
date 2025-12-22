@@ -15,7 +15,8 @@ void UserService::Auth() {
 
     auto user_entity = DBRegistry::Users().GetByEmail(login);
 
-    if (user_entity && utils::security::verify_password(login, password, user_entity->password_hash)) {
+    if (user_entity &&
+        utils::security::verify_password(login, password, user_entity->password_hash)) {
         const std::string token = GenerateToken_();
 
         api_response_.status = "OK";

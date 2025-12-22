@@ -9,8 +9,8 @@
 
 #include <models/api_response.h>
 #include <utils/http_response.h>
+#include <validators/access_token.h>
 #include <validators/json.h>
-#include <validators/token.h>
 
 namespace validate {
     bool default_request(const httplib::Request& req,

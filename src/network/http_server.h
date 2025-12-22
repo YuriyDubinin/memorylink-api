@@ -11,12 +11,12 @@
 #include <models/api_response.h>
 #include <services/user_service.h>
 #include <utils/http_response.h>
+#include <validators/access_token.h>
 #include <validators/json.h>
-#include <validators/token.h>
 #include <validators/user_auth.h>
 
+#include "validators/access_token.h"
 #include "validators/default_request.h"
-#include "validators/token.h"
 #include "validators/user_get.h"
 
 class HttpServer {

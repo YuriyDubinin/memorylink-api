@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+
 #include <pqxx/pqxx>
 
 class PostgresConnection {
@@ -10,7 +11,7 @@ public:
     explicit PostgresConnection(const std::string& connection_info);
     ~PostgresConnection() = default;
 
-    PostgresConnection(const PostgresConnection&) = delete;
+    PostgresConnection(const PostgresConnection&)            = delete;
     PostgresConnection& operator=(const PostgresConnection&) = delete;
 
     void Check() const;
@@ -26,10 +27,7 @@ public:
 
         pqxx::work tx(*connection_);
 
-        pqxx::result res = tx.exec(
-            pqxx::prepped{name},
-            pqxx::params{std::forward<Args>(args)...}
-        );
+        pqxx::result res = tx.exec(pqxx::prepped{name}, pqxx::params{std::forward<Args>(args)...});
 
         tx.commit();
         return res;

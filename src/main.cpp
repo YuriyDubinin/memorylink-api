@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <config/config_loader.h>
+#include <config/config_manager.h>
 #include <db/db_registry.h>
 #include <db/postgres_connection.hpp>
 #include <models/config.h>
@@ -8,7 +8,8 @@
 
 int main() {
     try {
-        const Config       cfg = ConfigLoader::Load("config.json");
+        ConfigManager::Load("config.json");
+        const Config&      cfg = ConfigManager::Get();
         PostgresConnection db(cfg.db);
         HttpServer         server(cfg.host, cfg.port);
 

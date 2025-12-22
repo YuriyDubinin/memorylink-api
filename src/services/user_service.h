@@ -8,9 +8,9 @@
 #include <models/api_response.h>
 #include <utils/http_response.h>
 #include <utils/password.h>
+
 #include "db/db_registry.h"
 #include "utils/password.h"
-
 #include <repositories/pg_user_repository.h>
 
 class UserService {

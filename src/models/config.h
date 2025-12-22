@@ -6,4 +6,6 @@ struct Config {
     std::string host;
     int         port;
     std::string db;
+    std::string pepper;
+    std::string salt;
 };
