@@ -1,11 +1,4 @@
-#include "access_token.h"
-
-#include <sstream>
-#include <stdexcept>
-#include <vector>
-
-#include <openssl/evp.h>
-#include <openssl/rand.h>
+#include "access_token_crypto.h"
 
 namespace utils::security {
     static std::string to_hex(const std::vector<unsigned char>& data) {
@@ -43,8 +36,9 @@ namespace utils::security {
         return out;
     }
 
-    std::string
-    encrypt(const std::string& plaintext, const std::string& key, const std::string& salt) {
+    // Шифрование и дешифрование
+    static std::string
+    encrypt_bytes(const std::string& plaintext, const std::string& key, const std::string& salt) {
         auto                       derived_key = derive_key(key, salt);
         std::vector<unsigned char> iv(EVP_MAX_IV_LENGTH);
         if (!RAND_bytes(iv.data(), iv.size()))
@@ -80,8 +74,8 @@ namespace utils::security {
         return to_hex(out);
     }
 
-    std::string
-    decrypt(const std::string& hex_input, const std::string& key, const std::string& salt) {
+    static std::string
+    decrypt_bytes(const std::string& hex_input, const std::string& key, const std::string& salt) {
         auto data = from_hex(hex_input);
         if (data.size() < EVP_MAX_IV_LENGTH)
             throw std::runtime_error("Invalid data size");
@@ -113,6 +107,47 @@ namespace utils::security {
         plaintext.resize(plaintext_len);
 
         return std::string(plaintext.begin(), plaintext.end());
+    }
+
+    // Сериализация структуры
+    std::string encrypt_access_token_struct(const AccessToken& token,
+                                            const std::string& key,
+                                            const std::string& salt) {
+        rapidjson::Document d;
+        d.SetObject();
+        auto& allocator = d.GetAllocator();
+        d.AddMember("id", token.id, allocator);
+        d.AddMember("full_name", rapidjson::Value(token.full_name.c_str(), allocator), allocator);
+        d.AddMember(
+            "password_hash", rapidjson::Value(token.password_hash.c_str(), allocator), allocator);
+        d.AddMember("family_id", token.family_id, allocator);
+        d.AddMember("ttl", token.ttl, allocator);
+
+        rapidjson::StringBuffer                    buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+        d.Accept(writer);
+
+        return encrypt_bytes(buffer.GetString(), key, salt);
+    }
+
+    AccessToken decrypt_access_token_struct(const std::string& encrypted_hex,
+                                            const std::string& key,
+                                            const std::string& salt) {
+        std::string json_str = decrypt_bytes(encrypted_hex, key, salt);
+
+        rapidjson::Document d;
+        d.Parse(json_str.c_str());
+        if (d.HasParseError())
+            throw std::runtime_error("Failed to parse decrypted JSON");
+
+        AccessToken token;
+        token.id            = d["id"].GetInt64();
+        token.full_name     = d["full_name"].GetString();
+        token.password_hash = d["password_hash"].GetString();
+        token.family_id     = d["family_id"].GetInt64();
+        token.ttl           = d["ttl"].GetInt64();
+
+        return token;
     }
 
 } // namespace utils::security

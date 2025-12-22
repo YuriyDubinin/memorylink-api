@@ -1,8 +1,9 @@
+#include "config/config_manager.h"
+
 #include <cstdio>
 #include <iostream>
 #include <stdexcept>
 
-#include "config/config_manager.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 
