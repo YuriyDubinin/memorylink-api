@@ -17,6 +17,7 @@
 #include <validators/json.h>
 #include <validators/user_auth.h>
 #include <validators/user_get.h>
+#include <validators/family_get.h>
 
 class HttpServer {
 public:

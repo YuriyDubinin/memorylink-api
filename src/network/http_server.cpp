@@ -55,6 +55,26 @@ void HttpServer::SetupRoutes_() {
         user_service.GetById();
     });
 
+    server_.Get("/family", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::default_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        if (!validate::user_get(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        UserService user_service(res, body_json, api_response);
+        user_service.GetById();
+    });
+
     SetupRoutesOptions_(server_, routes);
 }
 

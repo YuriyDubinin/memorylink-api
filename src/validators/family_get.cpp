@@ -1,7 +1,7 @@
 #include "user_get.h"
 
 namespace validate {
-    bool user_get(const rapidjson::Document& body_json, ApiResponse& api_response) {
+    bool family_get(const rapidjson::Document& body_json, ApiResponse& api_response) {
         if (!body_json.HasMember("id")) {
             api_response.status = "FAIL";
             api_response.code   = 400;
@@ -23,7 +23,7 @@ namespace validate {
             AccessTokenData token_data =
                 utils::security::decrypt_access_token_struct(encrypted_token, cfg.pepper, cfg.salt);
 
-            if (body_json["id"].GetInt() != token_data.id) {
+            if (body_json["id"].GetInt() != token_data.family_id) {
                 api_response.status = "ERROR";
                 api_response.code   = 403;
                 api_response.msg    = "Access denied: user is attempting an unauthorized action";
@@ -39,5 +39,4 @@ namespace validate {
             return false;
         }
     }
-
 } // namespace validate
