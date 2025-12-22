@@ -7,7 +7,14 @@ void HttpServer::Init() {
     Run();
 }
 
+void HttpServer::Run() {
+    std::cout << "[HTTPServer]: started, " << host_ << ":" << port_ << std::endl;
+    server_.listen(host_, port_);
+}
+
 void HttpServer::SetupRoutes_() {
+    const std::vector<std::string> routes = {"/user/auth", "/user"};
+
     server_.Post("/user/auth", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
 
@@ -48,23 +55,16 @@ void HttpServer::SetupRoutes_() {
         user_service.GetById();
     });
 
-    // Options
-    server_.Options("/user/auth", [](const httplib::Request&, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-        res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        res.set_header("Access-Control-Allow-Headers", "Content-Type");
-        res.status = 204;
-    });
-
-    server_.Options("/user", [](const httplib::Request&, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-        res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        res.set_header("Access-Control-Allow-Headers", "Content-Type");
-        res.status = 204;
-    });
+    SetupRoutesOptions_(server_, routes);
 }
 
-void HttpServer::Run() {
-    std::cout << "[HTTPServer]: started, " << host_ << ":" << port_ << std::endl;
-    server_.listen(host_, port_);
+void HttpServer::SetupRoutesOptions_(httplib::Server& server, const std::vector<std::string>& routes) {
+    for (const auto& route : routes) {
+        server.Options(route, [](const httplib::Request&, httplib::Response& res) {
+            res.set_header("Access-Control-Allow-Origin", "*");
+            res.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            res.status = 204;
+        });
+    }
 }

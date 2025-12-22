@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <httplib/httplib.h>
 #include <rapidjson/document.h>
@@ -24,9 +25,10 @@ public:
     void Run();
 
 private:
-    void SetupRoutes_();
-
     httplib::Server server_;
     std::string     host_;
     int             port_;
+
+    void SetupRoutes_();
+    void SetupRoutesOptions_(httplib::Server& server, const std::vector<std::string>& routes);
 };
