@@ -1,8 +1,5 @@
 #include "http_server.h"
 
-#include "validators/default_request.h"
-#include "validators/token.h"
-
 HttpServer::HttpServer(const std::string& host, int port) : host_(host), port_(port) {}
 
 void HttpServer::Init() {
@@ -22,13 +19,33 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::auth(body_json, api_response)) {
+        if (!validate::user_auth(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
 
         UserService user_service(res, body_json, api_response);
         user_service.Auth();
+    });
+
+    server_.Get("/user", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::default_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        if (!validate::user_get(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        UserService user_service(res, body_json, api_response);
+        user_service.Get();
     });
 
     // Options

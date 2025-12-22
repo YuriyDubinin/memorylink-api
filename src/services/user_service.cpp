@@ -31,6 +31,10 @@ void UserService::Auth() {
     utils::http_response::send(res_, api_response_, data);
 }
 
+void UserService::Get() {
+
+}
+
 std::string UserService::GenerateToken_() const {
     return "SECRET_TOKEN";
 }

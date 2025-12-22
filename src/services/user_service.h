@@ -15,6 +15,7 @@ public:
     ~UserService() = default;
 
     void Auth();
+    void Get();
 
 private:
     httplib::Response&   res_;

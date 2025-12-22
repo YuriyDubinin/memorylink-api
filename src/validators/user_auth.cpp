@@ -1,7 +1,7 @@
-#include "auth.h"
+#include "user_auth.h"
 
 namespace validate {
-    bool auth(const rapidjson::Document& body, ApiResponse& api_response) {
+    bool user_auth(const rapidjson::Document& body, ApiResponse& api_response) {
         if (!body.HasMember("login")) {
             api_response.status = "FAIL";
             api_response.code   = 400;
