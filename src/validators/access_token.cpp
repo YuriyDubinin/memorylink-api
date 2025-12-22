@@ -1,7 +1,7 @@
 #include "access_token.h"
 
 namespace validate {
-    bool token(const rapidjson::Document& body_json, ApiResponse& api_response) {
+    bool access_token(const rapidjson::Document& body_json, ApiResponse& api_response) {
         if (!body_json.HasMember("access_token")) {
             api_response.status = "ERROR";
             api_response.code   = 400;
@@ -16,27 +16,37 @@ namespace validate {
             return false;
         }
 
-        const std::string access_token = body_json["access_token"].GetString();
+        const std::string encrypted_token = body_json["access_token"].GetString();
 
-        // Проверка TTL
-        // std::int64_t now =
-        // std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()); if (now >
-        // stored_token.ttl) {
-        //     api_response.status = "ERROR";
-        //     api_response.code   = 401;
-        //     api_response.msg    = "Token expired";
-        //     return false;
-        // }
+        try {
+            const Config& cfg = ConfigManager::Get();
+            AccessTokenData token_data =
+                utils::security::decrypt_access_token_struct(
+                    encrypted_token,
+                    cfg.pepper,
+                    cfg.salt
+                );
 
-        // const std::string token = body_json["access_token"].GetString();
-        // if (token != EXPECTED_TOKEN) {
-        //     api_response.status = "ERROR";
-        //     api_response.code   = 401;
-        //     api_response.msg    = "Invalid token";
-        //     return false;
-        // }
+            // Текущее время (unix timestamp)
+            const std::int64_t now =
+                std::chrono::system_clock::to_time_t(
+                    std::chrono::system_clock::now());
 
-        return true;
+            if (now > token_data.ttl) {
+                api_response.status = "ERROR";
+                api_response.code   = 401;
+                api_response.msg    = "Invalid token";
+                return false;
+            }
+
+            return true;
+
+        } catch (const std::exception& e) {
+            api_response.status = "ERROR";
+            api_response.code   = 401;
+            api_response.msg    = "Invalid access token";
+            return false;
+        }
     }
 
 } // namespace validate

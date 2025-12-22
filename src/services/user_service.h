@@ -11,7 +11,7 @@
 #include <models/access_token_data.h>
 #include <models/api_response.h>
 #include <repositories/pg_user_repository.h>
-#include <utils/access_token_data.h>
+#include <utils/access_token_crypto.h>
 #include <utils/http_response.h>
 #include <utils/password.h>
 
