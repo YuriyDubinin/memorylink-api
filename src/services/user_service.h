@@ -9,6 +9,8 @@
 #include <utils/http_response.h>
 #include <utils/password.h>
 
+#include <repositories/pg_user_repository.h>
+
 class UserService {
 public:
     UserService(httplib::Response& res, rapidjson::Document& body_json, ApiResponse& api_response);

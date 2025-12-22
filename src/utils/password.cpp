@@ -15,27 +15,24 @@ namespace utils::security {
             return oss.str();
         }
 
-        std::vector<unsigned char> pbkdf2(const std::string& password,
-                                          const std::string& salt) {
+        std::vector<unsigned char> pbkdf2(const std::string& password, const std::string& salt) {
             std::vector<unsigned char> hash(HASH_LEN);
 
-            if (PKCS5_PBKDF2_HMAC(
-                    password.data(),
-                    static_cast<int>(password.size()),
-                    reinterpret_cast<const unsigned char*>(salt.data()),
-                    static_cast<int>(salt.size()),
-                    ITERATIONS,
-                    EVP_sha256(),
-                    HASH_LEN,
-                    hash.data()) != 1) {
+            if (PKCS5_PBKDF2_HMAC(password.data(),
+                                  static_cast<int>(password.size()),
+                                  reinterpret_cast<const unsigned char*>(salt.data()),
+                                  static_cast<int>(salt.size()),
+                                  ITERATIONS,
+                                  EVP_sha256(),
+                                  HASH_LEN,
+                                  hash.data()) != 1) {
                 throw std::runtime_error("PBKDF2_HMAC failed");
             }
 
             return hash;
         }
 
-        bool constant_time_equals(const std::string& a,
-                                  const std::string& b) {
+        bool constant_time_equals(const std::string& a, const std::string& b) {
             if (a.size() != b.size())
                 return false;
 
@@ -43,15 +40,14 @@ namespace utils::security {
         }
     } // namespace
 
-    std::string hash_password(const std::string& login,
-                              const std::string& password) {
+    std::string hash_password(const std::string& login, const std::string& password) {
         const auto hash = pbkdf2(password, login);
         return to_hex(hash.data(), hash.size());
     }
 
     bool verify_password(const std::string& login,
-                          const std::string& password,
-                          const std::string& stored_hash) {
+                         const std::string& password,
+                         const std::string& stored_hash) {
         const std::string computed = hash_password(login, password);
         return constant_time_equals(computed, stored_hash);
     }

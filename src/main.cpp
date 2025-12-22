@@ -1,7 +1,8 @@
 #include <iostream>
 
 #include <config/config_loader.h>
-#include <db/postgres_connection.h>
+#include <db/db_registry.h>
+#include <db/postgres_connection.hpp>
 #include <models/config.h>
 #include <network/http_server.h>
 
@@ -12,6 +13,15 @@ int main() {
         HttpServer         server(cfg.host, cfg.port);
 
         db.Check();
+
+        // Инициализация глобальных репозиториев
+        DBRegistry::Init(db);
+
+        auto user = DBRegistry::Users().GetById(1);
+        if (user) {
+            std::cout << "User: " << user->full_name << " (" << user->email << ")" << std::endl;
+        }
+
         server.Init();
     } catch (const std::exception& ex) {
         std::cerr << "[MAIN]: ERROR: " << ex.what() << std::endl;

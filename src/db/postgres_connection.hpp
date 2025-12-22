@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -14,15 +15,20 @@ public:
     PostgresConnection& operator=(const PostgresConnection&) = delete;
 
     void Check() const;
-
     bool IsConnected() const;
 
     pqxx::result execute(const std::string& query);
-
-    void prepare(const std::string& name, const std::string& query);
+    void         prepare(const std::string& name, const std::string& query);
 
     template <typename... Args>
-    pqxx::result execute_prepared(const std::string& name, Args&&... args);
+    pqxx::result execute_prepared(const std::string& name, Args&&... args) {
+        if (!IsConnected())
+            throw std::runtime_error("[DBConnection]: is not connected");
+        pqxx::work   tx(*connection_);
+        pqxx::result res = tx.exec_prepared(name, std::forward<Args>(args)...);
+        tx.commit();
+        return res;
+    }
 
     pqxx::connection& raw();
 
