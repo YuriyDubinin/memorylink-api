@@ -2,8 +2,9 @@
 
 #include <memory>
 
-#include "postgres_connection.hpp"
 #include <repositories/pg_user_repository.h>
+
+#include "postgres_connection.hpp"
 
 class DBRegistry {
 public:

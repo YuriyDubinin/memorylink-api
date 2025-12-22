@@ -13,9 +13,7 @@
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
-#include <models/access_token_crypto.h>
-
-#include "access_token_crypto.h"
+#include <models/access_token.h>
 
 namespace utils::security {
     std::string encrypt_access_token_struct(const AccessToken& token,

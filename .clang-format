@@ -59,8 +59,8 @@ IncludeCategories:
   - Regex: '^(<httplib/|<openssl/|<rapidjson/|"(httplib|openssl|rapidjson)/)'
     Priority: 2
 
-  # 3️⃣ Project headers (config -> db -> models -> network -> services -> utils -> validators)
-  - Regex: '^<(config|db|models|network|services|utils|validators)/|"(config|db|models|network|services|utils|validators)/'
+  # 3️⃣ Project headers (architecture order)
+  - Regex: '^<(config|db|repositories|models|network|services|validators|utils)/|"(config|db|repositories|models|network|services|validators|utils)/'
     Priority: 3
 
   # 4️⃣ Fallback

@@ -5,13 +5,13 @@
 #include <httplib/httplib.h>
 #include <rapidjson/document.h>
 
-#include "db/db_registry.h"
-#include "utils/password.h"
+#include <db/db_registry.h>
+#include <models/access_token.h>
 #include <models/api_response.h>
+#include <repositories/pg_user_repository.h>
+#include <utils/access_token.h>
 #include <utils/http_response.h>
 #include <utils/password.h>
-
-#include <repositories/pg_user_repository.h>
 
 class UserService {
 public:
