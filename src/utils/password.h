@@ -1,18 +1,20 @@
 #pragma once
 
-#include <iostream>
-#include <stdexcept>
 #include <string>
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
 #include <vector>
 
 #include <openssl/evp.h>
-#include <openssl/rand.h>
+#include <openssl/crypto.h>
 
 namespace utils::security {
-    std::vector<unsigned char> derive_password_key(const std::string& login,
-                                                   const std::string& password);
-    std::string                encrypt_password(const std::string&                plaintext,
-                                                const std::vector<unsigned char>& key);
-    std::string                decrypt_password(const std::string&                encrypted,
-                                                const std::vector<unsigned char>& key);
+    std::string hash_password(const std::string& login,
+                              const std::string& password);
+
+    bool verify_password(const std::string& login,
+                         const std::string& password,
+                         const std::string& stored_hash);
+
 } // namespace utils::security
