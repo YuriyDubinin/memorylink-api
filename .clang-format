@@ -55,17 +55,18 @@ IncludeCategories:
   - Regex: '^<([a-z_]+)>'
     Priority: 1
 
-  # 2️⃣ Third-party libraries
-  - Regex: '^<(httplib|rapidjson)/'
+  # 2️⃣ Third-party libraries (httplib + openssl + rapidjson)
+  - Regex: '^(<httplib/|<openssl/|<rapidjson/|"(httplib|openssl|rapidjson)/)'
     Priority: 2
 
-  # 3️⃣ Project headers
-  - Regex: '^<(models|utils|validators|services|db|network|config)/'
+  # 3️⃣ Project headers (config -> db -> models -> network -> services -> utils -> validators)
+  - Regex: '^<(config|db|models|network|services|utils|validators)/|"(config|db|models|network|services|utils|validators)/'
     Priority: 3
 
   # 4️⃣ Fallback
   - Regex: '.*'
     Priority: 4
+
 
 
 # ------------------------------------------------------------

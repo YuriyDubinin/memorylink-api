@@ -6,14 +6,16 @@
 #include <string>
 #include <vector>
 
-#include "access_token_crypto.h"
-#include "models/access_token_crypto.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 #include <openssl/crypto.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+
+#include <models/access_token_crypto.h>
+
+#include "access_token_crypto.h"
 
 namespace utils::security {
     std::string encrypt_access_token_struct(const AccessToken& token,

@@ -5,6 +5,7 @@
 
 #include "db/postgres_connection.hpp"
 #include "models/user.h"
+
 #include "user_repository.h"
 
 class PgUserRepository : public UserRepository {
