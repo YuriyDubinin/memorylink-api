@@ -9,6 +9,7 @@
 #include <rapidjson/writer.h>
 
 #include <models/api_response.h>
+#include <services/user_service.h>
 #include <utils/http_response.h>
 #include <validators/auth.h>
 #include <validators/json.h>

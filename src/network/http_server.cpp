@@ -1,6 +1,6 @@
 #include "http_server.h"
 
-#include "validators/execute.h"
+#include "validators/default_request.h"
 #include "validators/token.h"
 
 HttpServer::HttpServer(const std::string& host, int port) : host_(host), port_(port) {}
@@ -18,7 +18,7 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::execute(req, res, body_json, api_response)) {
+        if (!validate::json(req, body_json, api_response)) {
             return;
         }
 
@@ -27,8 +27,8 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        // TODO: service logic
-        utils::http_response::send(res, api_response);
+        UserService user_service(res, body_json, api_response);
+        user_service.Auth();
     });
 
     // Options

@@ -13,8 +13,8 @@
 #include <validators/token.h>
 
 namespace validate {
-    bool execute(const httplib::Request& req,
-                 httplib::Response&      res,
-                 rapidjson::Document&    body_json,
-                 ApiResponse&            api_response);
+    bool default_request(const httplib::Request& req,
+                         httplib::Response&      res,
+                         rapidjson::Document&    body_json,
+                         ApiResponse&            api_response);
 }
