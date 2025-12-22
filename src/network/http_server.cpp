@@ -49,12 +49,19 @@ void HttpServer::SetupRoutes_() {
     });
 
     // Options
-    server_.Options("/user/check", [](const httplib::Request&, httplib::Response& res) {
+    server_.Options("/user/auth", [](const httplib::Request&, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
         res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         res.set_header("Access-Control-Allow-Headers", "Content-Type");
         res.status = 204;
     });
+
+    server_.Options("/user", [](const httplib::Request&, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+        res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        res.set_header("Access-Control-Allow-Headers", "Content-Type");
+    res.status = 204;
+});
 }
 
 void HttpServer::Run() {
