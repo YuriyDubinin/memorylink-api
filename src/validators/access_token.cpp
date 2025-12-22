@@ -35,7 +35,7 @@ namespace validate {
             if (now > token_data.ttl) {
                 api_response.status = "ERROR";
                 api_response.code   = 401;
-                api_response.msg    = "Invalid token";
+                api_response.msg    = "Expired token";
                 return false;
             }
 
