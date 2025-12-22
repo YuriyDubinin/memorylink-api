@@ -13,13 +13,20 @@ void UserService::Auth() {
     data.SetObject();
     auto& allocator = data.GetAllocator();
 
-    const std::string token = GenerateToken_();
+    const std::string test_hash = "2830fffac1e704d3c6256e13202583185401ba35909018e35039ae4fd9faf246";
+    if (utils::security::verify_password(login, password, test_hash)) {
+        const std::string token = GenerateToken_();
 
-    api_response_.status = "OK";
-    api_response_.code   = 200;
-    api_response_.msg    = "Authorized";
+        api_response_.status = "OK";
+        api_response_.code   = 200;
+        api_response_.msg    = "Authorized";
 
-    data.AddMember("token", rapidjson::Value(token.c_str(), allocator), allocator);
+        data.AddMember("token", rapidjson::Value(token.c_str(), allocator), allocator);
+    } else {
+        api_response_.status = "ERROR";
+        api_response_.code   = 401;
+        api_response_.msg    = "Invalid 'login' or 'password'";
+    }
 
     utils::http_response::send(res_, api_response_, data);
 }
