@@ -7,6 +7,7 @@
 
 #include <models/api_response.h>
 #include <utils/http_response.h>
+#include <utils/password.h>
 
 class UserService {
 public:

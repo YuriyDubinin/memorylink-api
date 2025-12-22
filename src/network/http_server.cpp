@@ -60,8 +60,8 @@ void HttpServer::SetupRoutes_() {
         res.set_header("Access-Control-Allow-Origin", "*");
         res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         res.set_header("Access-Control-Allow-Headers", "Content-Type");
-    res.status = 204;
-});
+        res.status = 204;
+    });
 }
 
 void HttpServer::Run() {

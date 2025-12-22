@@ -13,27 +13,18 @@ void UserService::Auth() {
     data.SetObject();
     auto& allocator = data.GetAllocator();
 
-    const bool is_valid = login == "test" && password == "1234";
-    if (is_valid) {
-        const std::string token = GenerateToken_();
+    const std::string token = GenerateToken_();
 
-        api_response_.status = "OK";
-        api_response_.code   = 200;
-        api_response_.msg    = "Authorized";
+    api_response_.status = "OK";
+    api_response_.code   = 200;
+    api_response_.msg    = "Authorized";
 
-        data.AddMember("token", rapidjson::Value(token.c_str(), allocator), allocator);
-    } else {
-        api_response_.status = "ERROR";
-        api_response_.code   = 401;
-        api_response_.msg    = "Invalid login or password";
-    }
+    data.AddMember("token", rapidjson::Value(token.c_str(), allocator), allocator);
 
     utils::http_response::send(res_, api_response_, data);
 }
 
-void UserService::Get() {
-
-}
+void UserService::Get() {}
 
 std::string UserService::GenerateToken_() const {
     return "SECRET_TOKEN";

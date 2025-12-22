@@ -1,13 +1,13 @@
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <chrono>
 
 struct User {
     std::int64_t id;
-    bool is_active;
+    bool         is_active;
 
     std::string full_name;
     std::string email;
