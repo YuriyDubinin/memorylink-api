@@ -22,6 +22,7 @@ public:
     ~PhotoService() = default;
 
     void GetById();
+    void GetListByFamilyId();
 
 private:
     httplib::Response&   res_;

@@ -3,6 +3,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <db/postgres_connection.hpp>
 #include <models/photo.h>
@@ -15,7 +16,9 @@ public:
     explicit PgPhotoRepository(PostgresConnection& db_conn);
     ~PgPhotoRepository() override = default;
 
-    std::optional<Photo> GetById(std::int64_t family_id) override;
+    std::optional<Photo> GetById(std::int64_t photo_id) override;
+    std::vector<Photo>
+    GetListByFamilyId(std::int64_t family_id, std::size_t limit, std::size_t offset);
 
 private:
     PostgresConnection& db_;

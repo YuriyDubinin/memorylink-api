@@ -11,8 +11,8 @@
 
 #include <models/api_response.h>
 #include <services/family_service.h>
-#include <services/user_service.h>
 #include <services/photo_service.h>
+#include <services/user_service.h>
 #include <services/video_service.h>
 #include <utils/http_response.h>
 #include <validators/access_token.h>

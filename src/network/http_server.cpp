@@ -13,7 +13,17 @@ void HttpServer::Run() {
 }
 
 void HttpServer::SetupRoutes_() {
-    const std::vector<std::string> routes = {"/user", "/user/auth", "/family", "/photo", "video"};
+    const std::vector<std::string> routes = {// User
+                                             "/user",
+                                             "/user/auth",
+                                             // Family
+                                             "/family",
+                                             // Photo
+                                             "/photo",
+                                             "/photo/list"
+                                             // Video
+                                             "video",
+                                             "/photo/list"};
 
     // User
     server_.Get("/user", [](const httplib::Request& req, httplib::Response& res) {
@@ -96,6 +106,26 @@ void HttpServer::SetupRoutes_() {
 
         PhotoService photo_service(res, body_json, api_response);
         photo_service.GetById();
+    });
+
+    server_.Get("/photo/list", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::default_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        // if (!validate::photo_list_get(body_json, api_response)) {
+        //     utils::http_response::send(res, api_response);
+        //     return;
+        // }
+
+        PhotoService photo_service(res, body_json, api_response);
+        photo_service.GetListByFamilyId();
     });
 
     // Video
