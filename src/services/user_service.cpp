@@ -71,6 +71,17 @@ void UserService::GetById() {
         }
 
         data.AddMember("family_id", user_entity->family_id, allocator);
+
+        if (user_entity->avatar)
+            data.AddMember(
+                "avatar", rapidjson::Value(user_entity->avatar->c_str(), allocator), allocator);
+        else
+            data.AddMember("avatar", rapidjson::Value(rapidjson::kNullType), allocator);
+
+        data.AddMember(
+            "created_at", rapidjson::Value(user_entity->created_at.c_str(), allocator), allocator);
+        data.AddMember(
+            "updated_at", rapidjson::Value(user_entity->updated_at.c_str(), allocator), allocator);
     } else {
         api_response_.status = "ERROR";
         api_response_.code   = 401;

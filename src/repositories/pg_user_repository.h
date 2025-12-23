@@ -3,8 +3,9 @@
 #include <optional>
 #include <string>
 
-#include "db/postgres_connection.hpp"
-#include "models/user.h"
+#include <db/postgres_connection.hpp>
+#include <models/user.h>
+#include <utils/format_pg_timestamp.h>
 
 #include "user_repository.h"
 

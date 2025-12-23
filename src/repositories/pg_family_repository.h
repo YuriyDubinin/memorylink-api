@@ -6,6 +6,7 @@
 
 #include <db/postgres_connection.hpp>
 #include <models/family.h>
+#include <utils/format_pg_timestamp.h>
 
 #include "family_repository.h"
 

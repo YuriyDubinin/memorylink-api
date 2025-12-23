@@ -3,7 +3,7 @@
 PgFamilyRepository::PgFamilyRepository(PostgresConnection& db_conn) : db_(db_conn) {
     db_.prepare("get_family_by_id",
                 "SELECT id, name, description, owner_id, tariff_id, status, status_description, "
-                "storage_limit_mb, storage_used_mb, created_at, updated_at "
+                "storage_limit_mb, storage_used_mb, avatar, created_at, updated_at "
                 "FROM families WHERE id = $1");
 }
 
@@ -22,11 +22,20 @@ std::optional<Family> PgFamilyRepository::GetById(std::int64_t family_id) {
             family.description = row["description"].c_str();
         family.owner_id  = row["owner_id"].as<std::int64_t>();
         family.tariff_id = row["tariff_id"].as<std::int64_t>();
-        family.status    = ParseStatus(row["status"].c_str());
+
+        family.status = ParseStatus(row["status"].c_str());
         if (!row["status_description"].is_null())
             family.status_description = row["status_description"].c_str();
+        if (!row["avatar"].is_null())
+            family.avatar = row["avatar"].c_str();
+
         family.storage_limit_mb = row["storage_limit_mb"].as<int>();
         family.storage_used_mb  = row["storage_used_mb"].as<int>();
+
+        if (!row["created_at"].is_null())
+            family.created_at = utils::time::format_pg_timestamp(row["created_at"].c_str());
+        if (!row["updated_at"].is_null())
+            family.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
 
         return family;
     } catch (const std::exception& e) {

@@ -4,10 +4,12 @@
 
 PgUserRepository::PgUserRepository(PostgresConnection& db_conn) : db_(db_conn) {
     db_.prepare("get_user_by_id",
-                "SELECT id, is_active, email, full_name, password_hash, phone, address, family_id "
+                "SELECT id, is_active, email, full_name, password_hash, phone, address, family_id, "
+                "created_at, updated_at "
                 "FROM users WHERE id = $1");
     db_.prepare("get_user_by_email",
-                "SELECT id, is_active, email, full_name, password_hash, phone, address, family_id "
+                "SELECT id, is_active, email, full_name, password_hash, phone, address, family_id, "
+                "created_at, updated_at "
                 "FROM users WHERE email = $1");
 }
 
@@ -30,6 +32,11 @@ std::optional<User> PgUserRepository::GetById(std::int64_t user_id) {
         if (!row["address"].is_null())
             user.address = row["address"].c_str();
         user.family_id = row["family_id"].as<std::int64_t>();
+
+        if (!row["created_at"].is_null())
+            user.created_at = utils::time::format_pg_timestamp(row["created_at"].c_str());
+        if (!row["updated_at"].is_null())
+            user.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
 
         return user;
     } catch (const std::exception& e) {
@@ -56,7 +63,13 @@ std::optional<User> PgUserRepository::GetByEmail(const std::string& email) {
         if (!row["address"].is_null())
             user.address = row["address"].c_str();
         user.family_id = row["family_id"].as<std::int64_t>();
+        if (!row["avatar"].is_null())
+            user.avatar = row["avatar"].c_str();
 
+        if (!row["created_at"].is_null())
+            user.created_at = utils::time::format_pg_timestamp(row["created_at"].c_str());
+        if (!row["updated_at"].is_null())
+            user.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
         return user;
     } catch (const std::exception& e) {
         throw std::runtime_error(std::string("GetByEmail failed: ") + e.what());
