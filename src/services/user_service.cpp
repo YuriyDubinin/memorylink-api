@@ -13,7 +13,7 @@ void UserService::Auth() {
     data.SetObject();
     auto& allocator = data.GetAllocator();
 
-    auto user_entity = DBRegistry::Users().GetByEmail(login);
+    auto user_entity = DBRegistry::UserRepository().GetByEmail(login);
     if (user_entity &&
         utils::security::verify_password(login, password, user_entity->password_hash)) {
 
@@ -44,7 +44,7 @@ void UserService::GetById() {
     data.SetObject();
     auto& allocator = data.GetAllocator();
 
-    auto user_entity = DBRegistry::Users().GetById(id);
+    auto user_entity = DBRegistry::UserRepository().GetById(id);
     if (user_entity) {
         api_response_.status = "OK";
         api_response_.code   = 200;

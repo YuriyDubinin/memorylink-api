@@ -66,19 +66,20 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::user_get(body_json, api_response)) {
+        if (!validate::family_get(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
 
-        UserService user_service(res, body_json, api_response);
-        user_service.GetById();
+        FamilyService family_service(res, body_json, api_response);
+        family_service.GetById();
     });
 
     SetupRoutesOptions_(server_, routes);
 }
 
-void HttpServer::SetupRoutesOptions_(httplib::Server& server, const std::vector<std::string>& routes) {
+void HttpServer::SetupRoutesOptions_(httplib::Server&                server,
+                                     const std::vector<std::string>& routes) {
     for (const auto& route : routes) {
         server.Options(route, [](const httplib::Request&, httplib::Response& res) {
             res.set_header("Access-Control-Allow-Origin", "*");
