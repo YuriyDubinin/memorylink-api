@@ -19,4 +19,7 @@ public:
 
 private:
     PostgresConnection& db_;
+
+    UserStatus ParseStatus_(const std::string& status_str);
+    UserRole   ParseRole_(const std::string& role_str);
 };

@@ -23,7 +23,7 @@ std::optional<Family> PgFamilyRepository::GetById(std::int64_t family_id) {
         family.owner_id  = row["owner_id"].as<std::int64_t>();
         family.tariff_id = row["tariff_id"].as<std::int64_t>();
 
-        family.status = ParseStatus(row["status"].c_str());
+        family.status = ParseStatus_(row["status"].c_str());
         if (!row["status_description"].is_null())
             family.status_description = row["status_description"].c_str();
         if (!row["avatar"].is_null())
@@ -41,4 +41,14 @@ std::optional<Family> PgFamilyRepository::GetById(std::int64_t family_id) {
     } catch (const std::exception& e) {
         throw std::runtime_error(std::string("GetById failed: ") + e.what());
     }
+}
+
+FamilyStatus PgFamilyRepository::ParseStatus_(const std::string& status_str) {
+    if (status_str == "ACTIVE")
+        return FamilyStatus::ACTIVE;
+    if (status_str == "FROZEN")
+        return FamilyStatus::FROZEN;
+    if (status_str == "DELETED")
+        return FamilyStatus::DELETED;
+    throw std::runtime_error("Unknown family status: " + status_str);
 }

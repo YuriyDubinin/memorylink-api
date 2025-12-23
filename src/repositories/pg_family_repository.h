@@ -20,13 +20,5 @@ public:
 private:
     PostgresConnection& db_;
 
-    FamilyStatus ParseStatus(const std::string& status_str) {
-        if (status_str == "ACTIVE")
-            return FamilyStatus::ACTIVE;
-        if (status_str == "FROZEN")
-            return FamilyStatus::FROZEN;
-        if (status_str == "DELETED")
-            return FamilyStatus::DELETED;
-        throw std::runtime_error("Unknown family status: " + status_str);
-    }
+    FamilyStatus ParseStatus_(const std::string& status_str);
 };

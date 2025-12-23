@@ -5,11 +5,12 @@
 #include <optional>
 #include <string>
 
+enum class UserStatus { ACTIVE, DELETED };
+enum class UserRole { OWNER, ADMIN, READER };
+
 struct User {
     std::int64_t id;
     std::int64_t family_id;
-
-    bool is_active;
 
     std::string full_name;
     std::string email;
@@ -20,4 +21,7 @@ struct User {
     std::optional<std::string> phone;
     std::optional<std::string> address;
     std::optional<std::string> avatar;
+
+    UserStatus status = UserStatus::ACTIVE;
+    UserRole   role   = UserRole::READER;
 };

@@ -4,12 +4,12 @@
 
 PgUserRepository::PgUserRepository(PostgresConnection& db_conn) : db_(db_conn) {
     db_.prepare("get_user_by_id",
-                "SELECT id, is_active, email, full_name, password_hash, phone, address, family_id, "
-                "created_at, updated_at "
+                "SELECT id, email, full_name, password_hash, phone, address, family_id, "
+                "created_at, updated_at, status, role "
                 "FROM users WHERE id = $1");
     db_.prepare("get_user_by_email",
-                "SELECT id, is_active, email, full_name, password_hash, phone, address, family_id, "
-                "created_at, updated_at "
+                "SELECT id, full_name, password_hash, phone, address, family_id, "
+                "created_at, updated_at, status, role "
                 "FROM users WHERE email = $1");
 }
 
@@ -23,7 +23,6 @@ std::optional<User> PgUserRepository::GetById(std::int64_t user_id) {
 
         User user;
         user.id            = row["id"].as<std::int64_t>();
-        user.is_active     = row["is_active"].as<bool>();
         user.full_name     = row["full_name"].c_str();
         user.email         = row["email"].c_str();
         user.password_hash = row["password_hash"].c_str();
@@ -37,6 +36,11 @@ std::optional<User> PgUserRepository::GetById(std::int64_t user_id) {
             user.created_at = utils::time::format_pg_timestamp(row["created_at"].c_str());
         if (!row["updated_at"].is_null())
             user.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
+
+        if (!row["status"].is_null())
+            user.status = ParseStatus_(row["status"].c_str());
+        if (!row["role"].is_null())
+            user.role = ParseRole_(row["role"].c_str());
 
         return user;
     } catch (const std::exception& e) {
@@ -54,7 +58,6 @@ std::optional<User> PgUserRepository::GetByEmail(const std::string& email) {
 
         User user;
         user.id            = row["id"].as<std::int64_t>();
-        user.is_active     = row["is_active"].as<bool>();
         user.full_name     = row["full_name"].c_str();
         user.email         = row["email"].c_str();
         user.password_hash = row["password_hash"].c_str();
@@ -70,8 +73,30 @@ std::optional<User> PgUserRepository::GetByEmail(const std::string& email) {
             user.created_at = utils::time::format_pg_timestamp(row["created_at"].c_str());
         if (!row["updated_at"].is_null())
             user.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
+
+        user.status = ParseStatus_(row["status"].c_str());
+        user.role   = ParseRole_(row["role"].c_str());
+
         return user;
     } catch (const std::exception& e) {
         throw std::runtime_error(std::string("GetByEmail failed: ") + e.what());
     }
+}
+
+UserStatus PgUserRepository::ParseStatus_(const std::string& status_str) {
+    if (status_str == "ACTIVE")
+        return UserStatus::ACTIVE;
+    if (status_str == "DELETED")
+        return UserStatus::DELETED;
+    throw std::runtime_error("Unknown family status: " + status_str);
+}
+
+UserRole PgUserRepository::ParseRole_(const std::string& status_str) {
+    if (status_str == "OWNER")
+        return UserRole::OWNER;
+    if (status_str == "ADMIN")
+        return UserRole::ADMIN;
+    if (status_str == "READER")
+        return UserRole::READER;
+    throw std::runtime_error("Unknown family status: " + status_str);
 }

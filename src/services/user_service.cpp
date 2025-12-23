@@ -51,7 +51,6 @@ void UserService::GetById() {
         api_response_.msg    = "Success";
 
         data.AddMember("id", user_entity->id, allocator);
-        data.AddMember("is_active", user_entity->is_active, allocator);
         data.AddMember(
             "full_name", rapidjson::Value(user_entity->full_name.c_str(), allocator), allocator);
         data.AddMember("email", rapidjson::Value(user_entity->email.c_str(), allocator), allocator);
@@ -82,6 +81,31 @@ void UserService::GetById() {
             "created_at", rapidjson::Value(user_entity->created_at.c_str(), allocator), allocator);
         data.AddMember(
             "updated_at", rapidjson::Value(user_entity->updated_at.c_str(), allocator), allocator);
+
+        std::string user_status_str;
+        switch (user_entity->status) {
+            case UserStatus::ACTIVE:
+                user_status_str = "ACTIVE";
+                break;
+            case UserStatus::DELETED:
+                user_status_str = "DELETED";
+                break;
+        }
+        data.AddMember("status", rapidjson::Value(user_status_str.c_str(), allocator), allocator);
+
+        std::string user_role_str;
+        switch (user_entity->role) {
+            case UserRole::OWNER:
+                user_role_str = "OWNER";
+                break;
+            case UserRole::ADMIN:
+                user_role_str = "ADMIN";
+                break;
+            case UserRole::READER:
+                user_role_str = "READER";
+                break;
+        }
+        data.AddMember("role", rapidjson::Value(user_role_str.c_str(), allocator), allocator);
     } else {
         api_response_.status = "ERROR";
         api_response_.code   = 401;

@@ -32,19 +32,19 @@ void FamilyService::GetById() {
         else
             data.AddMember("description", rapidjson::Value(rapidjson::kNullType), allocator);
 
-        std::string status_str;
+        std::string family_status_str;
         switch (family_entity->status) {
             case FamilyStatus::ACTIVE:
-                status_str = "ACTIVE";
+                family_status_str = "ACTIVE";
                 break;
             case FamilyStatus::FROZEN:
-                status_str = "FROZEN";
+                family_status_str = "FROZEN";
                 break;
             case FamilyStatus::DELETED:
-                status_str = "DELETED";
+                family_status_str = "DELETED";
                 break;
         }
-        data.AddMember("status", rapidjson::Value(status_str.c_str(), allocator), allocator);
+        data.AddMember("status", rapidjson::Value(family_status_str.c_str(), allocator), allocator);
 
         if (family_entity->status_description)
             data.AddMember("status_description",
