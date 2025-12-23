@@ -10,18 +10,16 @@
 #include <db/db_registry.h>
 #include <models/access_token_data.h>
 #include <models/api_response.h>
-#include <repositories/pg_family_repository.h>
+#include <repositories/pg_video_repository.h>
 #include <utils/access_token_crypto.h>
 #include <utils/format_pg_timestamp.h>
 #include <utils/http_response.h>
 
-class FamilyService {
+class VideoService {
 public:
-    FamilyService(httplib::Response&   res,
-                  rapidjson::Document& body_json,
-                  ApiResponse&         api_response);
+    VideoService(httplib::Response& res, rapidjson::Document& body_json, ApiResponse& api_response);
 
-    ~FamilyService() = default;
+    ~VideoService() = default;
 
     void GetById();
 

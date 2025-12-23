@@ -13,7 +13,28 @@ void HttpServer::Run() {
 }
 
 void HttpServer::SetupRoutes_() {
-    const std::vector<std::string> routes = {"/user/auth", "/user"};
+    const std::vector<std::string> routes = {"/user", "/user/auth", "/family", "/photo", "video"};
+
+    // User
+    server_.Get("/user", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::default_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        if (!validate::user_get(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        UserService user_service(res, body_json, api_response);
+        user_service.GetById();
+    });
 
     server_.Post("/user/auth", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
@@ -35,26 +56,7 @@ void HttpServer::SetupRoutes_() {
         user_service.Auth();
     });
 
-    server_.Get("/user", [](const httplib::Request& req, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-
-        rapidjson::Document body_json;
-        ApiResponse         api_response;
-
-        // Validation
-        if (!validate::default_request(req, res, body_json, api_response)) {
-            return;
-        }
-
-        if (!validate::user_get(body_json, api_response)) {
-            utils::http_response::send(res, api_response);
-            return;
-        }
-
-        UserService user_service(res, body_json, api_response);
-        user_service.GetById();
-    });
-
+    // Family
     server_.Get("/family", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
 
@@ -73,6 +75,48 @@ void HttpServer::SetupRoutes_() {
 
         FamilyService family_service(res, body_json, api_response);
         family_service.GetById();
+    });
+
+    // Photo
+    server_.Get("/photo", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::default_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        if (!validate::photo_get(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        PhotoService photo_service(res, body_json, api_response);
+        photo_service.GetById();
+    });
+
+    // Video
+    server_.Get("/video", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::default_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        if (!validate::video_get(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        VideoService video_service(res, body_json, api_response);
+        video_service.GetById();
     });
 
     SetupRoutesOptions_(server_, routes);

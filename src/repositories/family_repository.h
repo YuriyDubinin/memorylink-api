@@ -9,5 +9,5 @@ class FamilyRepository {
 public:
     virtual ~FamilyRepository() {}
 
-    virtual std::optional<Family> GetById(std::int64_t user_id) = 0;
+    virtual std::optional<Family> GetById(std::int64_t family_id) = 0;
 };

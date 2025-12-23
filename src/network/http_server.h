@@ -12,13 +12,17 @@
 #include <models/api_response.h>
 #include <services/family_service.h>
 #include <services/user_service.h>
+#include <services/photo_service.h>
+#include <services/video_service.h>
 #include <utils/http_response.h>
 #include <validators/access_token.h>
 #include <validators/default_request.h>
 #include <validators/family_get.h>
 #include <validators/json.h>
+#include <validators/photo_get.h>
 #include <validators/user_auth.h>
 #include <validators/user_get.h>
+#include <validators/video_get.h>
 
 class HttpServer {
 public:
