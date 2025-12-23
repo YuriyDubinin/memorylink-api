@@ -44,7 +44,8 @@ std::optional<Photo> PgPhotoRepository::GetById(std::int64_t photo_id) {
 
         return photo;
     } catch (const std::exception& e) {
-        throw std::runtime_error(std::string("GetById failed: ") + e.what());
+        std::cout << "PgPhotoRepository::GetById failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("PgPhotoRepository::GetById failed: ") + e.what());
     }
 }
 
@@ -86,6 +87,7 @@ std::vector<Photo> PgPhotoRepository::GetListByFamilyId(std::int64_t family_id,
 
         return photos;
     } catch (const std::exception& e) {
-        throw std::runtime_error(std::string("GetListByFamilyId failed: ") + e.what());
+        std::cout << "PgPhotoRepository::GetById failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("PgPhotoRepository::GetById failed: ") + e.what());
     }
 }

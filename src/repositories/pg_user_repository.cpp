@@ -44,8 +44,8 @@ std::optional<User> PgUserRepository::GetById(std::int64_t user_id) {
 
         return user;
     } catch (const std::exception& e) {
-        std::cout << "GetById failed: " << e.what() << std::endl;
-        throw std::runtime_error(std::string("GetById failed: ") + e.what());
+        std::cout << "PgUserRepository::GetById failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("PgUserRepository::GetById failed: ") + e.what());
     }
 }
 
@@ -80,8 +80,8 @@ std::optional<User> PgUserRepository::GetByEmail(const std::string& email) {
 
         return user;
     } catch (const std::exception& e) {
-        std::cout << "GetByEmail failed: " << e.what() << std::endl;
-        throw std::runtime_error(std::string("GetByEmail failed: ") + e.what());
+        std::cout << "PgUserRepository::GetByEmail failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("PgUserRepository::GetByEmail failed: ") + e.what());
     }
 }
 
@@ -91,8 +91,8 @@ UserStatus PgUserRepository::ParseStatus_(const std::string& status_str) {
     if (status_str == "DELETED")
         return UserStatus::DELETED;
 
-    std::cout << "Unknown user status: " << status_str << std::endl;
-    throw std::runtime_error("Unknown user status: " + status_str);
+    std::cout << "PgUserRepository::ParseStatus_: Unknown user status: " << status_str << std::endl;
+    throw std::runtime_error("PgUserRepository::ParseStatus_: Unknown user status: " + status_str);
 }
 
 UserRole PgUserRepository::ParseRole_(const std::string& status_str) {
@@ -103,6 +103,6 @@ UserRole PgUserRepository::ParseRole_(const std::string& status_str) {
     if (status_str == "READER")
         return UserRole::READER;
 
-    std::cout << "Unknown user status: " << status_str << std::endl;
-    throw std::runtime_error("Unknown user status: " + status_str);
+    std::cout << "PgUserRepository::ParseStatus_: Unknown user role: " << status_str << std::endl;
+    throw std::runtime_error("PgUserRepository::ParseStatus_: Unknown user role: " + status_str);
 }

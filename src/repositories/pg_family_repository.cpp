@@ -39,7 +39,8 @@ std::optional<Family> PgFamilyRepository::GetById(std::int64_t family_id) {
 
         return family;
     } catch (const std::exception& e) {
-        throw std::runtime_error(std::string("GetById failed: ") + e.what());
+        std::cout << "PgFamilyRepository::GetById failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("PgFamilyRepository::GetById failed: ") + e.what());
     }
 }
 
@@ -50,5 +51,7 @@ FamilyStatus PgFamilyRepository::ParseStatus_(const std::string& status_str) {
         return FamilyStatus::FROZEN;
     if (status_str == "DELETED")
         return FamilyStatus::DELETED;
-    throw std::runtime_error("Unknown family status: " + status_str);
+
+    std::cout << "PgFamilyRepository::ParseStatus_: Unknown family status: " + status_str << std::endl;
+    throw std::runtime_error("PgFamilyRepository::ParseStatus_: Unknown family status: " + status_str);
 }

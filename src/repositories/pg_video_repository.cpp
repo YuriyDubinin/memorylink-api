@@ -44,6 +44,7 @@ std::optional<Video> PgVideoRepository::GetById(std::int64_t video_id) {
 
         return video;
     } catch (const std::exception& e) {
+        std::cout << "PgVideoRepository::GetById failed: " << e.what() << std::endl;
         throw std::runtime_error(std::string("GetById failed: ") + e.what());
     }
 }
