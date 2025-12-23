@@ -5,11 +5,11 @@
 PgUserRepository::PgUserRepository(PostgresConnection& db_conn) : db_(db_conn) {
     db_.prepare("get_user_by_id",
                 "SELECT id, email, full_name, password_hash, phone, address, family_id, "
-                "created_at, updated_at, status, role "
+                "created_at, updated_at, avatar, status, role "
                 "FROM users WHERE id = $1");
     db_.prepare("get_user_by_email",
-                "SELECT id, full_name, password_hash, phone, address, family_id, "
-                "created_at, updated_at, status, role "
+                "SELECT id, email, full_name, password_hash, phone, address, family_id, "
+                "created_at, updated_at, avatar, status, role "
                 "FROM users WHERE email = $1");
 }
 
@@ -44,6 +44,7 @@ std::optional<User> PgUserRepository::GetById(std::int64_t user_id) {
 
         return user;
     } catch (const std::exception& e) {
+        std::cout << "GetById failed: " << e.what() << std::endl;
         throw std::runtime_error(std::string("GetById failed: ") + e.what());
     }
 }
@@ -79,6 +80,7 @@ std::optional<User> PgUserRepository::GetByEmail(const std::string& email) {
 
         return user;
     } catch (const std::exception& e) {
+        std::cout << "GetByEmail failed: " << e.what() << std::endl;
         throw std::runtime_error(std::string("GetByEmail failed: ") + e.what());
     }
 }
@@ -88,7 +90,9 @@ UserStatus PgUserRepository::ParseStatus_(const std::string& status_str) {
         return UserStatus::ACTIVE;
     if (status_str == "DELETED")
         return UserStatus::DELETED;
-    throw std::runtime_error("Unknown family status: " + status_str);
+
+    std::cout << "Unknown user status: " << status_str << std::endl;
+    throw std::runtime_error("Unknown user status: " + status_str);
 }
 
 UserRole PgUserRepository::ParseRole_(const std::string& status_str) {
@@ -98,5 +102,7 @@ UserRole PgUserRepository::ParseRole_(const std::string& status_str) {
         return UserRole::ADMIN;
     if (status_str == "READER")
         return UserRole::READER;
-    throw std::runtime_error("Unknown family status: " + status_str);
+
+    std::cout << "Unknown user status: " << status_str << std::endl;
+    throw std::runtime_error("Unknown user status: " + status_str);
 }

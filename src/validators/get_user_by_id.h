@@ -13,5 +13,5 @@
 #include <utils/http_response.h>
 
 namespace validate {
-    bool user_get(const rapidjson::Document& body_json, ApiResponse& api_response);
+    bool get_user_by_id(const rapidjson::Document& body_json, ApiResponse& api_response);
 }

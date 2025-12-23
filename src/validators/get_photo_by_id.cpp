@@ -1,7 +1,7 @@
-#include "photo_get.h"
+#include "get_photo_by_id.h"
 
 namespace validate {
-    bool photo_get(const rapidjson::Document& body_json, ApiResponse& api_response) {
+    bool get_photo_by_id(const rapidjson::Document& body_json, ApiResponse& api_response) {
         if (!body_json.HasMember("id")) {
             api_response.status = "FAIL";
             api_response.code   = 400;

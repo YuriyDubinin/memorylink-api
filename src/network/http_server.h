@@ -16,13 +16,13 @@
 #include <services/video_service.h>
 #include <utils/http_response.h>
 #include <validators/access_token.h>
+#include <validators/auth_user.h>
 #include <validators/default_request.h>
-#include <validators/family_get.h>
+#include <validators/get_family_by_id.h>
+#include <validators/get_photo_by_id.h>
+#include <validators/get_user_by_id.h>
+#include <validators/get_video_by_id.h>
 #include <validators/json.h>
-#include <validators/photo_get.h>
-#include <validators/user_auth.h>
-#include <validators/user_get.h>
-#include <validators/video_get.h>
 
 class HttpServer {
 public:

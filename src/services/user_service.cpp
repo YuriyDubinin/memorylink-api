@@ -6,16 +6,17 @@ UserService::UserService(httplib::Response&   res,
     : res_(res), body_json_(body_json), api_response_(api_response) {}
 
 void UserService::Auth() {
-    const std::string login    = body_json_["login"].GetString();
+    const std::string email    = body_json_["email"].GetString();
     const std::string password = body_json_["password"].GetString();
 
     rapidjson::Document data;
     data.SetObject();
     auto& allocator = data.GetAllocator();
 
-    auto user_entity = DBRegistry::UserRepository().GetByEmail(login);
+    auto user_entity = DBRegistry::UserRepository().GetByEmail(email);
+
     if (user_entity &&
-        utils::security::verify_password(login, password, user_entity->password_hash)) {
+        utils::security::verify_password(email, password, user_entity->password_hash)) {
 
         AccessTokenData access_token_data;
         access_token_data.id        = user_entity->id;
@@ -27,7 +28,7 @@ void UserService::Auth() {
         api_response_.code   = 200;
         api_response_.msg    = "Authorized";
 
-        data.AddMember("token", rapidjson::Value(token.c_str(), allocator), allocator);
+        data.AddMember("access_token", rapidjson::Value(token.c_str(), allocator), allocator);
     } else {
         api_response_.status = "ERROR";
         api_response_.code   = 401;
@@ -109,7 +110,7 @@ void UserService::GetById() {
     } else {
         api_response_.status = "ERROR";
         api_response_.code   = 401;
-        api_response_.msg    = "Invalid 'id";
+        api_response_.msg    = "Invalid 'id'";
     }
 
     utils::http_response::send(res_, api_response_, data);

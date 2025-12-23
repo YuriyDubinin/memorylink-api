@@ -1,18 +1,18 @@
-#include "user_auth.h"
+#include "auth_user.h"
 
 namespace validate {
-    bool user_auth(const rapidjson::Document& body_json, ApiResponse& api_response) {
-        if (!body_json.HasMember("login")) {
+    bool auth_user(const rapidjson::Document& body_json, ApiResponse& api_response) {
+        if (!body_json.HasMember("email")) {
             api_response.status = "FAIL";
             api_response.code   = 400;
-            api_response.msg    = "Missing required field 'login'";
+            api_response.msg    = "Missing required field 'email'";
             return false;
         }
 
-        if (!body_json["login"].IsString()) {
+        if (!body_json["email"].IsString()) {
             api_response.status = "FAIL";
             api_response.code   = 422;
-            api_response.msg    = "'login' must be a string";
+            api_response.msg    = "'email' must be a string";
             return false;
         }
 

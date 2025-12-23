@@ -13,5 +13,5 @@
 #include <utils/http_response.h>
 
 namespace validate {
-    bool family_get(const rapidjson::Document& body_json, ApiResponse& api_response);
+    bool get_video_by_id(const rapidjson::Document& body_json, ApiResponse& api_response);
 }

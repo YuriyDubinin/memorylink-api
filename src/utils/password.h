@@ -10,9 +10,9 @@
 #include <openssl/evp.h>
 
 namespace utils::security {
-    std::string hash_password(const std::string& login, const std::string& password);
+    std::string hash_password(const std::string& email, const std::string& password);
 
-    bool verify_password(const std::string& login,
+    bool verify_password(const std::string& email,
                          const std::string& password,
                          const std::string& stored_hash);
 

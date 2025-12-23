@@ -11,5 +11,5 @@
 #include <utils/password.h>
 
 namespace validate {
-    bool user_auth(const rapidjson::Document& body_json, ApiResponse& api_response);
+    bool auth_user(const rapidjson::Document& body_json, ApiResponse& api_response);
 }

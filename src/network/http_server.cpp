@@ -1,5 +1,7 @@
 #include "http_server.h"
 
+#include "validators/get_photo_list_by_family_id.h"
+
 HttpServer::HttpServer(const std::string& host, int port) : host_(host), port_(port) {}
 
 void HttpServer::Init() {
@@ -20,7 +22,7 @@ void HttpServer::SetupRoutes_() {
                                              "/family",
                                              // Photo
                                              "/photo",
-                                             "/photo/list"
+                                             "/photo/list",
                                              // Video
                                              "video",
                                              "/photo/list"};
@@ -37,7 +39,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::user_get(body_json, api_response)) {
+        if (!validate::get_user_by_id(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
@@ -57,7 +59,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::user_auth(body_json, api_response)) {
+        if (!validate::auth_user(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
@@ -78,7 +80,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::family_get(body_json, api_response)) {
+        if (!validate::get_family_by_id(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
@@ -99,7 +101,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::photo_get(body_json, api_response)) {
+        if (!validate::get_photo_by_id(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
@@ -119,10 +121,10 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        // if (!validate::photo_list_get(body_json, api_response)) {
-        //     utils::http_response::send(res, api_response);
-        //     return;
-        // }
+        if (!validate::get_photo_list_by_family_id(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
 
         PhotoService photo_service(res, body_json, api_response);
         photo_service.GetListByFamilyId();
@@ -140,7 +142,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::video_get(body_json, api_response)) {
+        if (!validate::get_video_by_id(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }

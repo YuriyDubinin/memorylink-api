@@ -1,7 +1,7 @@
-#include "video_get.h"
+#include "get_video_by_id.h"
 
 namespace validate {
-    bool video_get(const rapidjson::Document& body_json, ApiResponse& api_response) {
+    bool get_video_by_id(const rapidjson::Document& body_json, ApiResponse& api_response) {
         if (!body_json.HasMember("id")) {
             api_response.status = "FAIL";
             api_response.code   = 400;

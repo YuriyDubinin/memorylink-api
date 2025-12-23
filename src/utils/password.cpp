@@ -40,15 +40,15 @@ namespace utils::security {
         }
     } // namespace
 
-    std::string hash_password(const std::string& login, const std::string& password) {
-        const auto hash = pbkdf2(password, login);
+    std::string hash_password(const std::string& email, const std::string& password) {
+        const auto hash = pbkdf2(password, email);
         return to_hex(hash.data(), hash.size());
     }
 
-    bool verify_password(const std::string& login,
+    bool verify_password(const std::string& email,
                          const std::string& password,
                          const std::string& stored_hash) {
-        const std::string computed = hash_password(login, password);
+        const std::string computed = hash_password(email, password);
         return constant_time_equals(computed, stored_hash);
     }
 
