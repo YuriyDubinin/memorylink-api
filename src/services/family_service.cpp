@@ -55,8 +55,8 @@ void FamilyService::GetById() {
             data.AddMember("status_description", rapidjson::Value(rapidjson::kNullType), allocator);
         }
 
-        data.AddMember("storage_limit_gb", family_entity->storage_limit_gb, allocator);
-        data.AddMember("storage_used_gb", family_entity->storage_used_gb, allocator);
+        data.AddMember("storage_limit_mb", family_entity->storage_limit_mb, allocator);
+        data.AddMember("storage_used_mb", family_entity->storage_used_mb, allocator);
     } else {
         api_response_.status = "ERROR";
         api_response_.code   = 401;

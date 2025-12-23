@@ -3,7 +3,7 @@
 PgFamilyRepository::PgFamilyRepository(PostgresConnection& db_conn) : db_(db_conn) {
     db_.prepare("get_family_by_id",
                 "SELECT id, name, description, owner_id, tariff_id, status, status_description, "
-                "storage_limit_gb, storage_used_gb, created_at, updated_at "
+                "storage_limit_mb, storage_used_mb, created_at, updated_at "
                 "FROM families WHERE id = $1");
 }
 
@@ -25,8 +25,8 @@ std::optional<Family> PgFamilyRepository::GetById(std::int64_t family_id) {
         family.status    = ParseStatus(row["status"].c_str());
         if (!row["status_description"].is_null())
             family.status_description = row["status_description"].c_str();
-        family.storage_limit_gb = row["storage_limit_gb"].as<int>();
-        family.storage_used_gb  = row["storage_used_gb"].as<int>();
+        family.storage_limit_mb = row["storage_limit_mb"].as<int>();
+        family.storage_used_mb  = row["storage_used_mb"].as<int>();
 
         return family;
     } catch (const std::exception& e) {

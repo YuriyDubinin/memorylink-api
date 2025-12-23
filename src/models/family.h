@@ -15,8 +15,8 @@ struct Family {
     std::int64_t                          tariff_id;
     FamilyStatus                          status = FamilyStatus::ACTIVE;
     std::optional<std::string>            status_description;
-    int                                   storage_limit_gb = 5;
-    int                                   storage_used_gb  = 0;
+    int                                   storage_limit_mb = 5210;
+    int                                   storage_used_mb  = 0;
     std::chrono::system_clock::time_point created_at       = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point updated_at       = std::chrono::system_clock::now();
 };
