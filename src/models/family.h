@@ -12,8 +12,8 @@ struct Family {
     std::int64_t owner_id;
     std::int64_t tariff_id;
 
-    int storage_limit_mb = 5210;
-    int storage_used_mb  = 0;
+    double storage_limit_mb;
+    double storage_used_mb;
 
     std::string name;
     std::string created_at;

@@ -29,8 +29,8 @@ std::optional<Family> PgFamilyRepository::GetById(std::int64_t family_id) {
         if (!row["avatar"].is_null())
             family.avatar = row["avatar"].c_str();
 
-        family.storage_limit_mb = row["storage_limit_mb"].as<int>();
-        family.storage_used_mb  = row["storage_used_mb"].as<int>();
+        family.storage_limit_mb = row["storage_limit_mb"].as<double>();
+        family.storage_used_mb  = row["storage_used_mb"].as<double>();
 
         if (!row["created_at"].is_null())
             family.created_at = utils::time::format_pg_timestamp(row["created_at"].c_str());
