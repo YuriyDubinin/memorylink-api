@@ -17,9 +17,12 @@ public:
     std::optional<User> GetById(std::int64_t user_id) override;
     std::optional<User> GetByEmail(const std::string& email) override;
 
+    UserStatus ParseStatus(const std::string& status_str);
+    UserRole   ParseRole(const std::string& role_str);
+
+    std::string FormatStatusToString(UserStatus status);
+    std::string FormatRoleToString(UserRole role);
+
 private:
     PostgresConnection& db_;
-
-    UserStatus ParseStatus_(const std::string& status_str);
-    UserRole   ParseRole_(const std::string& role_str);
 };

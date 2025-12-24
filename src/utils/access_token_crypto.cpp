@@ -1,6 +1,18 @@
 #include "access_token_crypto.h"
 
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
+#include <vector>
+
+#include <openssl/evp.h>
+#include <openssl/rand.h>
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
 namespace utils::security {
+
     static std::string to_hex(const std::vector<unsigned char>& data) {
         std::stringstream ss;
         for (auto b : data)
@@ -36,7 +48,6 @@ namespace utils::security {
         return out;
     }
 
-    // Шифрование и дешифрование
     static std::string
     encrypt_bytes(const std::string& plaintext, const std::string& key, const std::string& salt) {
         auto                       derived_key = derive_key(key, salt);
@@ -109,7 +120,6 @@ namespace utils::security {
         return std::string(plaintext.begin(), plaintext.end());
     }
 
-    // Сериализация структуры
     std::string encrypt_access_token_struct(const AccessTokenData& token,
                                             const std::string&     key,
                                             const std::string&     salt) {
@@ -119,6 +129,7 @@ namespace utils::security {
         d.AddMember("id", token.id, allocator);
         d.AddMember("family_id", token.family_id, allocator);
         d.AddMember("ttl", token.ttl, allocator);
+        d.AddMember("role", rapidjson::Value(token.role.c_str(), allocator), allocator);
 
         rapidjson::StringBuffer                    buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -141,6 +152,7 @@ namespace utils::security {
         token.id        = d["id"].GetInt64();
         token.family_id = d["family_id"].GetInt64();
         token.ttl       = d["ttl"].GetInt64();
+        token.role      = d["role"].GetString();
 
         return token;
     }

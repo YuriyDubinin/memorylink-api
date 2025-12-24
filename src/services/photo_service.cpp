@@ -89,6 +89,8 @@ void PhotoService::GetListByFamilyId() {
     AccessTokenData   token_data =
         utils::security::decrypt_access_token_struct(encrypted_token, cfg.pepper, cfg.salt);
 
+    std::cout << "role: " << token_data.role << std::endl;
+
     if (family_id != token_data.family_id) {
         api_response_.status = "ERROR";
         api_response_.code   = 403;

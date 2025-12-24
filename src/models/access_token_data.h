@@ -6,5 +6,6 @@
 struct AccessTokenData {
     std::int64_t id;
     std::int64_t family_id;
+    std::string  role;
     std::int64_t ttl;
 };

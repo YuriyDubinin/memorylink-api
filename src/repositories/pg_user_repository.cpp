@@ -38,9 +38,9 @@ std::optional<User> PgUserRepository::GetById(std::int64_t user_id) {
             user.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
 
         if (!row["status"].is_null())
-            user.status = ParseStatus_(row["status"].c_str());
+            user.status = ParseStatus(row["status"].c_str());
         if (!row["role"].is_null())
-            user.role = ParseRole_(row["role"].c_str());
+            user.role = ParseRole(row["role"].c_str());
 
         return user;
     } catch (const std::exception& e) {
@@ -75,8 +75,8 @@ std::optional<User> PgUserRepository::GetByEmail(const std::string& email) {
         if (!row["updated_at"].is_null())
             user.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
 
-        user.status = ParseStatus_(row["status"].c_str());
-        user.role   = ParseRole_(row["role"].c_str());
+        user.status = ParseStatus(row["status"].c_str());
+        user.role   = ParseRole(row["role"].c_str());
 
         return user;
     } catch (const std::exception& e) {
@@ -85,17 +85,17 @@ std::optional<User> PgUserRepository::GetByEmail(const std::string& email) {
     }
 }
 
-UserStatus PgUserRepository::ParseStatus_(const std::string& status_str) {
+UserStatus PgUserRepository::ParseStatus(const std::string& status_str) {
     if (status_str == "ACTIVE")
         return UserStatus::ACTIVE;
     if (status_str == "DELETED")
         return UserStatus::DELETED;
 
-    std::cout << "PgUserRepository::ParseStatus_: Unknown user status: " << status_str << std::endl;
-    throw std::runtime_error("PgUserRepository::ParseStatus_: Unknown user status: " + status_str);
+    std::cout << "PgUserRepository::ParseStatus: Unknown user status: " << status_str << std::endl;
+    throw std::runtime_error("PgUserRepository::ParseStatus: Unknown user status: " + status_str);
 }
 
-UserRole PgUserRepository::ParseRole_(const std::string& status_str) {
+UserRole PgUserRepository::ParseRole(const std::string& status_str) {
     if (status_str == "OWNER")
         return UserRole::OWNER;
     if (status_str == "ADMIN")
@@ -103,6 +103,30 @@ UserRole PgUserRepository::ParseRole_(const std::string& status_str) {
     if (status_str == "READER")
         return UserRole::READER;
 
-    std::cout << "PgUserRepository::ParseStatus_: Unknown user role: " << status_str << std::endl;
-    throw std::runtime_error("PgUserRepository::ParseStatus_: Unknown user role: " + status_str);
+    std::cout << "PgUserRepository::ParseStatus: Unknown user role: " << status_str << std::endl;
+    throw std::runtime_error("PgUserRepository::ParseStatus: Unknown user role: " + status_str);
+}
+
+std::string PgUserRepository::FormatStatusToString(UserStatus status) {
+    switch (status) {
+        case UserStatus::ACTIVE:
+            return "ACTIVE";
+        case UserStatus::DELETED:
+            return "DELETED";
+        default:
+            throw std::runtime_error("FormatStatusToString: Unknown UserStatus enum value");
+    }
+}
+
+std::string PgUserRepository::FormatRoleToString(UserRole role) {
+    switch (role) {
+        case UserRole::OWNER:
+            return "OWNER";
+        case UserRole::ADMIN:
+            return "ADMIN";
+        case UserRole::READER:
+            return "READER";
+        default:
+            throw std::runtime_error("FormatRoleToString: Unknown UserRole enum value");
+    }
 }

@@ -21,6 +21,7 @@ void UserService::Auth() {
         AccessTokenData access_token_data;
         access_token_data.id        = user_entity->id;
         access_token_data.family_id = user_entity->family_id;
+        access_token_data.role = DBRegistry::UserRepository().FormatRoleToString(user_entity->role);
 
         const std::string token = GenerateToken_(access_token_data);
 
