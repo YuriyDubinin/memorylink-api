@@ -3,6 +3,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <db/postgres_connection.hpp>
 #include <models/video.h>
@@ -16,7 +17,7 @@ public:
     ~PgVideoRepository() override = default;
 
     std::optional<Video> GetById(std::int64_t video_id) override;
-    std::vector<Video>
+    VideoListResult
     GetListByFamilyId(std::int64_t family_id, std::size_t limit, std::size_t offset);
 
 private:

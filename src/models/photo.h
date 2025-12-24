@@ -23,3 +23,8 @@ struct Photo {
     std::optional<double>      resolution_width_px;
     std::optional<double>      resolution_height_px;
 };
+
+struct PhotoListResult {
+    std::size_t        count;
+    std::vector<Photo> list;
+};

@@ -15,11 +15,13 @@ PgVideoRepository::PgVideoRepository(PostgresConnection& db_conn) : db_(db_conn)
                 "WHERE family_id = $1 "
                 "ORDER BY created_at DESC "
                 "LIMIT $2 OFFSET $3");
+
+    db_.prepare("count_videos_by_family_id", "SELECT COUNT(*) FROM videos WHERE family_id = $1");
 }
 
 std::optional<Video> PgVideoRepository::GetById(std::int64_t video_id) {
     try {
-        pqxx::result res = db_.execute_prepared("get_video_by_id", video_id);
+        const pqxx::result res = db_.execute_prepared("get_video_by_id", video_id);
         if (res.empty())
             return std::nullopt;
 
@@ -63,24 +65,31 @@ std::optional<Video> PgVideoRepository::GetById(std::int64_t video_id) {
     }
 }
 
-std::vector<Video> PgVideoRepository::GetListByFamilyId(std::int64_t family_id,
-                                                        std::size_t  limit,
-                                                        std::size_t  offset) {
+VideoListResult PgVideoRepository::GetListByFamilyId(std::int64_t family_id,
+                                                     std::size_t  limit,
+                                                     std::size_t  offset) {
     try {
-        pqxx::result res = db_.execute_prepared("get_videos_by_family_id",
-                                                family_id,
-                                                static_cast<int>(limit),
-                                                static_cast<int>(offset));
+        // count
+        const pqxx::result count_res = db_.execute_prepared("count_videos_by_family_id", family_id);
 
-        std::vector<Video> videos;
-        videos.reserve(res.size());
+        VideoListResult result;
+        result.count = count_res[0][0].as<std::size_t>();
+
+        // list
+        const pqxx::result res = db_.execute_prepared("get_videos_by_family_id",
+                                                      family_id,
+                                                      static_cast<int>(limit),
+                                                      static_cast<int>(offset));
+
+        result.list.reserve(res.size());
 
         for (const auto& row : res) {
             Video video;
 
-            video.id           = row["id"].as<std::int64_t>();
-            video.family_id    = row["family_id"].as<std::int64_t>();
-            video.is_active    = row["is_active"].as<bool>();
+            video.id        = row["id"].as<std::int64_t>();
+            video.family_id = row["family_id"].as<std::int64_t>();
+            video.is_active = row["is_active"].as<bool>();
+
             video.file_size_mb = row["file_size_mb"].as<double>();
 
             video.name      = row["name"].c_str();
@@ -108,12 +117,14 @@ std::vector<Video> PgVideoRepository::GetListByFamilyId(std::int64_t family_id,
             if (!row["updated_at"].is_null())
                 video.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
 
-            videos.push_back(std::move(video));
+            result.list.push_back(std::move(video));
         }
 
-        return videos;
+        return result;
     } catch (const std::exception& e) {
         std::cout << "PgVideoRepository::GetListByFamilyId failed: " << e.what() << std::endl;
-        throw std::runtime_error(std::string("GetListByFamilyId failed: ") + e.what());
+
+        throw std::runtime_error(std::string("PgVideoRepository::GetListByFamilyId failed: ") +
+                                 e.what());
     }
 }

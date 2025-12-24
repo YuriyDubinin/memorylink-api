@@ -9,7 +9,7 @@ PgFamilyRepository::PgFamilyRepository(PostgresConnection& db_conn) : db_(db_con
 
 std::optional<Family> PgFamilyRepository::GetById(std::int64_t family_id) {
     try {
-        pqxx::result res = db_.execute_prepared("get_family_by_id", family_id);
+        const pqxx::result res = db_.execute_prepared("get_family_by_id", family_id);
         if (res.empty())
             return std::nullopt;
 

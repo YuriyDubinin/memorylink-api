@@ -9,12 +9,17 @@ PgPhotoRepository::PgPhotoRepository(PostgresConnection& db_conn) : db_(db_conn)
     db_.prepare("get_photos_by_family_id",
                 "SELECT id, family_id, is_active, file_size_mb, name, hash, mime_type, "
                 "description, resolution_width_px, resolution_height_px, created_at, updated_at "
-                "FROM photos WHERE family_id = $1 ORDER BY id LIMIT $2 OFFSET $3");
+                "FROM photos "
+                "WHERE family_id = $1 "
+                "ORDER BY id "
+                "LIMIT $2 OFFSET $3");
+
+    db_.prepare("count_photos_by_family_id", "SELECT COUNT(*) FROM photos WHERE family_id = $1");
 }
 
 std::optional<Photo> PgPhotoRepository::GetById(std::int64_t photo_id) {
     try {
-        pqxx::result res = db_.execute_prepared("get_photo_by_id", photo_id);
+        const pqxx::result res = db_.execute_prepared("get_photo_by_id", photo_id);
         if (res.empty())
             return std::nullopt;
 
@@ -49,16 +54,23 @@ std::optional<Photo> PgPhotoRepository::GetById(std::int64_t photo_id) {
     }
 }
 
-std::vector<Photo> PgPhotoRepository::GetListByFamilyId(std::int64_t family_id,
-                                                        std::size_t  limit,
-                                                        std::size_t  offset) {
+PhotoListResult PgPhotoRepository::GetListByFamilyId(std::int64_t family_id,
+                                                     std::size_t  limit,
+                                                     std::size_t  offset) {
     try {
-        pqxx::result       res = db_.execute_prepared("get_photos_by_family_id",
-                                                family_id,
-                                                static_cast<int>(limit),
-                                                static_cast<int>(offset));
-        std::vector<Photo> photos;
-        photos.reserve(res.size());
+        // count
+        const pqxx::result count_res = db_.execute_prepared("count_photos_by_family_id", family_id);
+
+        PhotoListResult result;
+        result.count = count_res[0][0].as<std::size_t>();
+
+        // list
+        const pqxx::result res = db_.execute_prepared("get_photos_by_family_id",
+                                                      family_id,
+                                                      static_cast<int>(limit),
+                                                      static_cast<int>(offset));
+
+        result.list.reserve(res.size());
 
         for (const auto& row : res) {
             Photo photo;
@@ -84,12 +96,13 @@ std::vector<Photo> PgPhotoRepository::GetListByFamilyId(std::int64_t family_id,
             if (!row["updated_at"].is_null())
                 photo.updated_at = utils::time::format_pg_timestamp(row["updated_at"].c_str());
 
-            photos.push_back(std::move(photo));
+            result.list.push_back(std::move(photo));
         }
 
-        return photos;
+        return result;
     } catch (const std::exception& e) {
-        std::cout << "PgPhotoRepository::GetById failed: " << e.what() << std::endl;
-        throw std::runtime_error(std::string("PgPhotoRepository::GetById failed: ") + e.what());
+        std::cout << "PgPhotoRepository::GetListByFamilyId failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("PgPhotoRepository::GetListByFamilyId failed: ") +
+                                 e.what());
     }
 }

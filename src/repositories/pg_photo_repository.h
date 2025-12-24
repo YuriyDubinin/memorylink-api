@@ -17,7 +17,7 @@ public:
     ~PgPhotoRepository() override = default;
 
     std::optional<Photo> GetById(std::int64_t photo_id) override;
-    std::vector<Photo>
+    PhotoListResult
     GetListByFamilyId(std::int64_t family_id, std::size_t limit, std::size_t offset);
 
 private:

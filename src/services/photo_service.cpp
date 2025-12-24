@@ -88,56 +88,60 @@ void PhotoService::GetListByFamilyId() {
     data.SetObject();
     auto& allocator = data.GetAllocator();
 
-    std::vector<Photo> photo_list =
+    PhotoListResult photo_list_res =
         DBRegistry::PhotoRepository().GetListByFamilyId(family_id, limit, offset);
 
     rapidjson::Value photos_json(rapidjson::kArrayType);
 
-    for (const auto& photo : photo_list) {
-        rapidjson::Value item(rapidjson::kObjectType);
+    if (photo_list_res.count > 0) {
+        for (const auto& photo : photo_list_res.list) {
+            rapidjson::Value item(rapidjson::kObjectType);
 
-        item.AddMember("id", photo.id, allocator);
-        item.AddMember("family_id", photo.family_id, allocator);
-        item.AddMember("is_active", photo.is_active, allocator);
-        item.AddMember("file_size_mb", photo.file_size_mb, allocator);
-        item.AddMember("name", rapidjson::Value(photo.name.c_str(), allocator), allocator);
-        item.AddMember("hash", rapidjson::Value(photo.hash.c_str(), allocator), allocator);
-        item.AddMember(
-            "mime_type", rapidjson::Value(photo.mime_type.c_str(), allocator), allocator);
-
-        if (photo.description) {
+            item.AddMember("id", photo.id, allocator);
+            item.AddMember("family_id", photo.family_id, allocator);
+            item.AddMember("is_active", photo.is_active, allocator);
+            item.AddMember("file_size_mb", photo.file_size_mb, allocator);
+            item.AddMember("name", rapidjson::Value(photo.name.c_str(), allocator), allocator);
+            item.AddMember("hash", rapidjson::Value(photo.hash.c_str(), allocator), allocator);
             item.AddMember(
-                "description", rapidjson::Value(photo.description->c_str(), allocator), allocator);
-        } else {
-            item.AddMember("description", rapidjson::Value(rapidjson::kNullType), allocator);
-        }
+                "mime_type", rapidjson::Value(photo.mime_type.c_str(), allocator), allocator);
 
-        if (photo.resolution_width_px) {
-            item.AddMember("resolution_width_px", *photo.resolution_width_px, allocator);
-        } else {
+            if (photo.description) {
+                item.AddMember("description",
+                               rapidjson::Value(photo.description->c_str(), allocator),
+                               allocator);
+            } else {
+                item.AddMember("description", rapidjson::Value(rapidjson::kNullType), allocator);
+            }
+
+            if (photo.resolution_width_px) {
+                item.AddMember("resolution_width_px", *photo.resolution_width_px, allocator);
+            } else {
+                item.AddMember(
+                    "resolution_width_px", rapidjson::Value(rapidjson::kNullType), allocator);
+            }
+
+            if (photo.resolution_height_px) {
+                item.AddMember("resolution_height_px", *photo.resolution_height_px, allocator);
+            } else {
+                item.AddMember(
+                    "resolution_height_px", rapidjson::Value(rapidjson::kNullType), allocator);
+            }
+
             item.AddMember(
-                "resolution_width_px", rapidjson::Value(rapidjson::kNullType), allocator);
-        }
-
-        if (photo.resolution_height_px) {
-            item.AddMember("resolution_height_px", *photo.resolution_height_px, allocator);
-        } else {
+                "created_at", rapidjson::Value(photo.created_at.c_str(), allocator), allocator);
             item.AddMember(
-                "resolution_height_px", rapidjson::Value(rapidjson::kNullType), allocator);
+                "updated_at", rapidjson::Value(photo.updated_at.c_str(), allocator), allocator);
+
+            photos_json.PushBack(item, allocator);
         }
-
-        item.AddMember(
-            "created_at", rapidjson::Value(photo.created_at.c_str(), allocator), allocator);
-        item.AddMember(
-            "updated_at", rapidjson::Value(photo.updated_at.c_str(), allocator), allocator);
-
-        photos_json.PushBack(item, allocator);
     }
 
     api_response_.status = "OK";
     api_response_.code   = 200;
     api_response_.msg    = "Success";
 
+    data.AddMember("count", static_cast<int>(photo_list_res.count), allocator);
     data.AddMember("list", photos_json, allocator);
 
     utils::http_response::send(res_, api_response_, data);

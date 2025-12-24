@@ -25,3 +25,8 @@ struct Video {
     std::optional<double>      duration_sec;
     std::optional<double>      frame_rate;
 };
+
+struct VideoListResult {
+    std::size_t        count;
+    std::vector<Video> list;
+};
