@@ -62,6 +62,37 @@ void ConfigManager::LoadConfig_(const std::string& filename) {
         throw std::runtime_error("[ConfigManager]: Missing or invalid 'db' in config");
     }
 
+    // S3
+    if (doc.HasMember("s3") && doc["s3"].IsObject()) {
+        const auto& s3 = doc["s3"];
+        if (s3.HasMember("access_key") && s3["access_key"].IsString()) {
+            cfg_.s3_access_key = s3["access_key"].GetString();
+        } else {
+            throw std::runtime_error("[ConfigManager]: Missing or invalid 'access_key' in config");
+        }
+
+        if (s3.HasMember("secret_key") && s3["secret_key"].IsString()) {
+            cfg_.s3_secret_key = s3["secret_key"].GetString();
+        } else {
+            throw std::runtime_error("[ConfigManager]: Missing or invalid 'secret_key' in config");
+        }
+
+        if (s3.HasMember("endpoint") && s3["endpoint"].IsString()) {
+            cfg_.s3_endpoint = s3["endpoint"].GetString();
+        } else {
+            throw std::runtime_error("[ConfigManager]: Missing or invalid 'endpoint' in config");
+        }
+
+        if (s3.HasMember("region") && s3["region"].IsString()) {
+            cfg_.s3_region = s3["region"].GetString();
+        } else {
+            throw std::runtime_error("[ConfigManager]: Missing or invalid 'region' in config");
+        }
+
+    } else {
+        throw std::runtime_error("[ConfigManager]: Missing 'http' section in config");
+    }
+
     // Pepper
     if (doc.HasMember("pepper") && doc["pepper"].IsString()) {
         cfg_.pepper = doc["pepper"].GetString();

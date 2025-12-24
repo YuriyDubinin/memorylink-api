@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "models/config.h"
+#include <models/config.h>
 
 class ConfigManager {
 public:
