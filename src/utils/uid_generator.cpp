@@ -1,7 +1,6 @@
 #include "uid_generator.h"
 
 namespace utils {
-
     std::string UIDGenerator::generate() {
         std::lock_guard<std::mutex> lock(get_mutex());
 
