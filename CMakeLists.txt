@@ -89,9 +89,11 @@ target_include_directories(memorylink_api PRIVATE
 # Зависимости
 # =========================
 find_package(libpqxx CONFIG REQUIRED)
+find_package(AWSSDK REQUIRED COMPONENTS s3)
 
 target_link_libraries(memorylink_api PRIVATE
         libpqxx::pqxx
+        aws-cpp-sdk-s3
 )
 
 

@@ -13,18 +13,6 @@ void HttpServer::Run() {
 }
 
 void HttpServer::SetupRoutes_() {
-    const std::vector<std::string> routes = {// User
-                                             "/user",
-                                             "/user/auth",
-                                             // Family
-                                             "/family",
-                                             // Photo
-                                             "/photo",
-                                             "/photo/list",
-                                             // Video
-                                             "video",
-                                             "/video/list"};
-
     // User
     server_.Get("/user", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
@@ -169,7 +157,7 @@ void HttpServer::SetupRoutes_() {
         video_service.GetListByFamilyId();
     });
 
-    SetupRoutesOptions_(server_, routes);
+    SetupRoutesOptions_(server_, routes_);
 }
 
 void HttpServer::SetupRoutesOptions_(httplib::Server&                server,

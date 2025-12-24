@@ -37,6 +37,20 @@ private:
     std::string     host_;
     int             port_;
 
+    // Routes:
+    std::vector<std::string> routes_ = {
+        // User
+        "/user",
+        "/user/auth",
+        // Family
+        "/family",
+        // Photo
+        "/photo",
+        "/photo/list",
+        // Video
+        "video",
+        "/video/list"};
+
     void SetupRoutes_();
     void SetupRoutesOptions_(httplib::Server& server, const std::vector<std::string>& routes);
 };
