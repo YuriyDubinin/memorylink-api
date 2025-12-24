@@ -9,14 +9,14 @@
 int main() {
     try {
         ConfigManager::Load("config.json");
-        const Config&      cfg = ConfigManager::Get();
-        PostgresConnection db(cfg.db);
-        HttpServer         server(cfg.host, cfg.port);
+        const Config& cfg = ConfigManager::Get();
 
+        PostgresConnection db(cfg.db);
         db.Check();
         DBRegistry::Init(db);
 
-        server.Init();
+        HttpServer http_server(cfg.host, cfg.port);
+        http_server.Init();
     } catch (const std::exception& ex) {
         std::cerr << "[MAIN]: ERROR: " << ex.what() << std::endl;
         return 1;
