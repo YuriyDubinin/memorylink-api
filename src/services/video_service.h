@@ -22,6 +22,7 @@ public:
     ~VideoService() = default;
 
     void GetById();
+    void GetListByFamilyId();
 
 private:
     httplib::Response&   res_;

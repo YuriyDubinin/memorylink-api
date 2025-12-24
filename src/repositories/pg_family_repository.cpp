@@ -52,6 +52,8 @@ FamilyStatus PgFamilyRepository::ParseStatus_(const std::string& status_str) {
     if (status_str == "DELETED")
         return FamilyStatus::DELETED;
 
-    std::cout << "PgFamilyRepository::ParseStatus_: Unknown family status: " + status_str << std::endl;
-    throw std::runtime_error("PgFamilyRepository::ParseStatus_: Unknown family status: " + status_str);
+    std::cout << "PgFamilyRepository::ParseStatus_: Unknown family status: " + status_str
+              << std::endl;
+    throw std::runtime_error("PgFamilyRepository::ParseStatus_: Unknown family status: " +
+                             status_str);
 }

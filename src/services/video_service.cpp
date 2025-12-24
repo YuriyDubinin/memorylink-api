@@ -90,3 +90,67 @@ void VideoService::GetById() {
 
     utils::http_response::send(res_, api_response_, data);
 }
+
+void VideoService::GetListByFamilyId() {
+    const std::int64_t family_id = body_json_["family_id"].GetInt64();
+    const std::size_t  limit     = body_json_["limit"].GetUint64();
+    const std::size_t  offset    = body_json_["offset"].GetUint64();
+
+    rapidjson::Document data;
+    data.SetObject();
+    auto& allocator = data.GetAllocator();
+
+    std::vector<Video> video_list =
+        DBRegistry::VideoRepository().GetListByFamilyId(family_id, limit, offset);
+
+    rapidjson::Value videos_json(rapidjson::kArrayType);
+
+    for (const auto& video : video_list) {
+        rapidjson::Value item(rapidjson::kObjectType);
+
+        item.AddMember("id", video.id, allocator);
+        item.AddMember("family_id", video.family_id, allocator);
+        item.AddMember("is_active", video.is_active, allocator);
+        item.AddMember("file_size_mb", video.file_size_mb, allocator);
+        item.AddMember("name", rapidjson::Value(video.name.c_str(), allocator), allocator);
+        item.AddMember("hash", rapidjson::Value(video.hash.c_str(), allocator), allocator);
+        item.AddMember(
+            "mime_type", rapidjson::Value(video.mime_type.c_str(), allocator), allocator);
+
+        if (video.description) {
+            item.AddMember(
+                "description", rapidjson::Value(video.description->c_str(), allocator), allocator);
+        } else {
+            item.AddMember("description", rapidjson::Value(rapidjson::kNullType), allocator);
+        }
+
+        if (video.resolution_width_px) {
+            item.AddMember("resolution_width_px", *video.resolution_width_px, allocator);
+        } else {
+            item.AddMember(
+                "resolution_width_px", rapidjson::Value(rapidjson::kNullType), allocator);
+        }
+
+        if (video.resolution_height_px) {
+            item.AddMember("resolution_height_px", *video.resolution_height_px, allocator);
+        } else {
+            item.AddMember(
+                "resolution_height_px", rapidjson::Value(rapidjson::kNullType), allocator);
+        }
+
+        item.AddMember(
+            "created_at", rapidjson::Value(video.created_at.c_str(), allocator), allocator);
+        item.AddMember(
+            "updated_at", rapidjson::Value(video.updated_at.c_str(), allocator), allocator);
+
+        videos_json.PushBack(item, allocator);
+    }
+
+    api_response_.status = "OK";
+    api_response_.code   = 200;
+    api_response_.msg    = "Success";
+
+    data.AddMember("list", videos_json, allocator);
+
+    utils::http_response::send(res_, api_response_, data);
+}

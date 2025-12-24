@@ -1,7 +1,5 @@
 #include "http_server.h"
 
-#include "validators/get_photo_list_by_family_id.h"
-
 HttpServer::HttpServer(const std::string& host, int port) : host_(host), port_(port) {}
 
 void HttpServer::Init() {
@@ -25,7 +23,7 @@ void HttpServer::SetupRoutes_() {
                                              "/photo/list",
                                              // Video
                                              "video",
-                                             "/photo/list"};
+                                             "/video/list"};
 
     // User
     server_.Get("/user", [](const httplib::Request& req, httplib::Response& res) {
@@ -149,6 +147,26 @@ void HttpServer::SetupRoutes_() {
 
         VideoService video_service(res, body_json, api_response);
         video_service.GetById();
+    });
+
+    server_.Get("/video/list", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::default_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        if (!validate::get_video_list_by_family_id(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        VideoService video_service(res, body_json, api_response);
+        video_service.GetListByFamilyId();
     });
 
     SetupRoutesOptions_(server_, routes);

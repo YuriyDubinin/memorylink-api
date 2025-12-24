@@ -6,7 +6,7 @@ PgPhotoRepository::PgPhotoRepository(PostgresConnection& db_conn) : db_(db_conn)
                 "description, resolution_width_px, resolution_height_px, created_at, updated_at "
                 "FROM photos WHERE id = $1");
 
-    db_.prepare("get_photos_by_family",
+    db_.prepare("get_photos_by_family_id",
                 "SELECT id, family_id, is_active, file_size_mb, name, hash, mime_type, "
                 "description, resolution_width_px, resolution_height_px, created_at, updated_at "
                 "FROM photos WHERE family_id = $1 ORDER BY id LIMIT $2 OFFSET $3");
@@ -53,8 +53,10 @@ std::vector<Photo> PgPhotoRepository::GetListByFamilyId(std::int64_t family_id,
                                                         std::size_t  limit,
                                                         std::size_t  offset) {
     try {
-        pqxx::result res = db_.execute_prepared(
-            "get_photos_by_family", family_id, static_cast<int>(limit), static_cast<int>(offset));
+        pqxx::result       res = db_.execute_prepared("get_photos_by_family_id",
+                                                family_id,
+                                                static_cast<int>(limit),
+                                                static_cast<int>(offset));
         std::vector<Photo> photos;
         photos.reserve(res.size());
 
