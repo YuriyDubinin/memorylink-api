@@ -32,7 +32,7 @@ void UserService::Auth() {
     } else {
         api_response_.status = "ERROR";
         api_response_.code   = 401;
-        api_response_.msg    = "Invalid 'login' or 'password'";
+        api_response_.msg    = "Invalid 'email' or 'password'";
     }
 
     utils::http_response::send(res_, api_response_, data);
