@@ -8,8 +8,8 @@
 #ifndef CPPHTTPLIB_HTTPLIB_H
 #define CPPHTTPLIB_HTTPLIB_H
 
-#define CPPHTTPLIB_VERSION "0.28.0"
-#define CPPHTTPLIB_VERSION_NUM "0x001C00"
+#define CPPHTTPLIB_VERSION "0.29.0"
+#define CPPHTTPLIB_VERSION_NUM "0x001D00"
 
 /*
  * Platform compatibility check
@@ -1015,6 +1015,10 @@ void default_socket_options(socket_t sock);
 
 const char *status_message(int status);
 
+std::string to_string(Error error);
+
+std::ostream &operator<<(std::ostream &os, const Error &obj);
+
 std::string get_bearer_token_auth(const Request &req);
 
 namespace detail {
@@ -1747,7 +1751,6 @@ protected:
   // Socket endpoint information
   const std::string host_;
   const int port_;
-  const std::string host_and_port_;
 
   // Current open socket
   Socket socket_;
@@ -2307,82 +2310,6 @@ inline void default_socket_options(socket_t sock) {
                          1);
 }
 
-inline const char *status_message(int status) {
-  switch (status) {
-  case StatusCode::Continue_100: return "Continue";
-  case StatusCode::SwitchingProtocol_101: return "Switching Protocol";
-  case StatusCode::Processing_102: return "Processing";
-  case StatusCode::EarlyHints_103: return "Early Hints";
-  case StatusCode::OK_200: return "OK";
-  case StatusCode::Created_201: return "Created";
-  case StatusCode::Accepted_202: return "Accepted";
-  case StatusCode::NonAuthoritativeInformation_203:
-    return "Non-Authoritative Information";
-  case StatusCode::NoContent_204: return "No Content";
-  case StatusCode::ResetContent_205: return "Reset Content";
-  case StatusCode::PartialContent_206: return "Partial Content";
-  case StatusCode::MultiStatus_207: return "Multi-Status";
-  case StatusCode::AlreadyReported_208: return "Already Reported";
-  case StatusCode::IMUsed_226: return "IM Used";
-  case StatusCode::MultipleChoices_300: return "Multiple Choices";
-  case StatusCode::MovedPermanently_301: return "Moved Permanently";
-  case StatusCode::Found_302: return "Found";
-  case StatusCode::SeeOther_303: return "See Other";
-  case StatusCode::NotModified_304: return "Not Modified";
-  case StatusCode::UseProxy_305: return "Use Proxy";
-  case StatusCode::unused_306: return "unused";
-  case StatusCode::TemporaryRedirect_307: return "Temporary Redirect";
-  case StatusCode::PermanentRedirect_308: return "Permanent Redirect";
-  case StatusCode::BadRequest_400: return "Bad Request";
-  case StatusCode::Unauthorized_401: return "Unauthorized";
-  case StatusCode::PaymentRequired_402: return "Payment Required";
-  case StatusCode::Forbidden_403: return "Forbidden";
-  case StatusCode::NotFound_404: return "Not Found";
-  case StatusCode::MethodNotAllowed_405: return "Method Not Allowed";
-  case StatusCode::NotAcceptable_406: return "Not Acceptable";
-  case StatusCode::ProxyAuthenticationRequired_407:
-    return "Proxy Authentication Required";
-  case StatusCode::RequestTimeout_408: return "Request Timeout";
-  case StatusCode::Conflict_409: return "Conflict";
-  case StatusCode::Gone_410: return "Gone";
-  case StatusCode::LengthRequired_411: return "Length Required";
-  case StatusCode::PreconditionFailed_412: return "Precondition Failed";
-  case StatusCode::PayloadTooLarge_413: return "Payload Too Large";
-  case StatusCode::UriTooLong_414: return "URI Too Long";
-  case StatusCode::UnsupportedMediaType_415: return "Unsupported Media Type";
-  case StatusCode::RangeNotSatisfiable_416: return "Range Not Satisfiable";
-  case StatusCode::ExpectationFailed_417: return "Expectation Failed";
-  case StatusCode::ImATeapot_418: return "I'm a teapot";
-  case StatusCode::MisdirectedRequest_421: return "Misdirected Request";
-  case StatusCode::UnprocessableContent_422: return "Unprocessable Content";
-  case StatusCode::Locked_423: return "Locked";
-  case StatusCode::FailedDependency_424: return "Failed Dependency";
-  case StatusCode::TooEarly_425: return "Too Early";
-  case StatusCode::UpgradeRequired_426: return "Upgrade Required";
-  case StatusCode::PreconditionRequired_428: return "Precondition Required";
-  case StatusCode::TooManyRequests_429: return "Too Many Requests";
-  case StatusCode::RequestHeaderFieldsTooLarge_431:
-    return "Request Header Fields Too Large";
-  case StatusCode::UnavailableForLegalReasons_451:
-    return "Unavailable For Legal Reasons";
-  case StatusCode::NotImplemented_501: return "Not Implemented";
-  case StatusCode::BadGateway_502: return "Bad Gateway";
-  case StatusCode::ServiceUnavailable_503: return "Service Unavailable";
-  case StatusCode::GatewayTimeout_504: return "Gateway Timeout";
-  case StatusCode::HttpVersionNotSupported_505:
-    return "HTTP Version Not Supported";
-  case StatusCode::VariantAlsoNegotiates_506: return "Variant Also Negotiates";
-  case StatusCode::InsufficientStorage_507: return "Insufficient Storage";
-  case StatusCode::LoopDetected_508: return "Loop Detected";
-  case StatusCode::NotExtended_510: return "Not Extended";
-  case StatusCode::NetworkAuthenticationRequired_511:
-    return "Network Authentication Required";
-
-  default:
-  case StatusCode::InternalServerError_500: return "Internal Server Error";
-  }
-}
-
 inline std::string get_bearer_token_auth(const Request &req) {
   if (req.has_header("Authorization")) {
     constexpr auto bearer_header_prefix_len = detail::str_len("Bearer ");
@@ -2414,57 +2341,6 @@ Server::set_idle_interval(const std::chrono::duration<Rep, Period> &duration) {
   detail::duration_to_sec_and_usec(
       duration, [&](time_t sec, time_t usec) { set_idle_interval(sec, usec); });
   return *this;
-}
-
-inline std::string to_string(const Error error) {
-  switch (error) {
-  case Error::Success: return "Success (no error)";
-  case Error::Unknown: return "Unknown";
-  case Error::Connection: return "Could not establish connection";
-  case Error::BindIPAddress: return "Failed to bind IP address";
-  case Error::Read: return "Failed to read connection";
-  case Error::Write: return "Failed to write connection";
-  case Error::ExceedRedirectCount: return "Maximum redirect count exceeded";
-  case Error::Canceled: return "Connection handling canceled";
-  case Error::SSLConnection: return "SSL connection failed";
-  case Error::SSLLoadingCerts: return "SSL certificate loading failed";
-  case Error::SSLServerVerification: return "SSL server verification failed";
-  case Error::SSLServerHostnameVerification:
-    return "SSL server hostname verification failed";
-  case Error::UnsupportedMultipartBoundaryChars:
-    return "Unsupported HTTP multipart boundary characters";
-  case Error::Compression: return "Compression failed";
-  case Error::ConnectionTimeout: return "Connection timed out";
-  case Error::ProxyConnection: return "Proxy connection failed";
-  case Error::ConnectionClosed: return "Connection closed by server";
-  case Error::Timeout: return "Read timeout";
-  case Error::ResourceExhaustion: return "Resource exhaustion";
-  case Error::TooManyFormDataFiles: return "Too many form data files";
-  case Error::ExceedMaxPayloadSize: return "Exceeded maximum payload size";
-  case Error::ExceedUriMaxLength: return "Exceeded maximum URI length";
-  case Error::ExceedMaxSocketDescriptorCount:
-    return "Exceeded maximum socket descriptor count";
-  case Error::InvalidRequestLine: return "Invalid request line";
-  case Error::InvalidHTTPMethod: return "Invalid HTTP method";
-  case Error::InvalidHTTPVersion: return "Invalid HTTP version";
-  case Error::InvalidHeaders: return "Invalid headers";
-  case Error::MultipartParsing: return "Multipart parsing failed";
-  case Error::OpenFile: return "Failed to open file";
-  case Error::Listen: return "Failed to listen on socket";
-  case Error::GetSockName: return "Failed to get socket name";
-  case Error::UnsupportedAddressFamily: return "Unsupported address family";
-  case Error::HTTPParsing: return "HTTP parsing failed";
-  case Error::InvalidRangeHeader: return "Invalid Range header";
-  default: break;
-  }
-
-  return "Invalid";
-}
-
-inline std::ostream &operator<<(std::ostream &os, const Error &obj) {
-  os << to_string(obj);
-  os << " (" << static_cast<std::underlying_type<Error>::type>(obj) << ')';
-  return os;
 }
 
 inline size_t Result::get_request_header_value_u64(const std::string &key,
@@ -2866,58 +2742,668 @@ private:
 // NOTE: https://www.rfc-editor.org/rfc/rfc9110#section-5
 namespace fields {
 
-inline bool is_token_char(char c) {
-  return std::isalnum(c) || c == '!' || c == '#' || c == '$' || c == '%' ||
-         c == '&' || c == '\'' || c == '*' || c == '+' || c == '-' ||
-         c == '.' || c == '^' || c == '_' || c == '`' || c == '|' || c == '~';
-}
-
-inline bool is_token(const std::string &s) {
-  if (s.empty()) { return false; }
-  for (auto c : s) {
-    if (!is_token_char(c)) { return false; }
-  }
-  return true;
-}
-
-inline bool is_field_name(const std::string &s) { return is_token(s); }
-
-inline bool is_vchar(char c) { return c >= 33 && c <= 126; }
-
-inline bool is_obs_text(char c) { return 128 <= static_cast<unsigned char>(c); }
-
-inline bool is_field_vchar(char c) { return is_vchar(c) || is_obs_text(c); }
-
-inline bool is_field_content(const std::string &s) {
-  if (s.empty()) { return true; }
-
-  if (s.size() == 1) {
-    return is_field_vchar(s[0]);
-  } else if (s.size() == 2) {
-    return is_field_vchar(s[0]) && is_field_vchar(s[1]);
-  } else {
-    size_t i = 0;
-
-    if (!is_field_vchar(s[i])) { return false; }
-    i++;
-
-    while (i < s.size() - 1) {
-      auto c = s[i++];
-      if (c == ' ' || c == '\t' || is_field_vchar(c)) {
-      } else {
-        return false;
-      }
-    }
-
-    return is_field_vchar(s[i]);
-  }
-}
-
-inline bool is_field_value(const std::string &s) { return is_field_content(s); }
+bool is_token_char(char c);
+bool is_token(const std::string &s);
+bool is_field_name(const std::string &s);
+bool is_vchar(char c);
+bool is_obs_text(char c);
+bool is_field_vchar(char c);
+bool is_field_content(const std::string &s);
+bool is_field_value(const std::string &s);
 
 } // namespace fields
 
 } // namespace detail
+
+namespace stream {
+
+class Result {
+public:
+  Result() : chunk_size_(8192) {}
+
+  explicit Result(ClientImpl::StreamHandle &&handle, size_t chunk_size = 8192)
+      : handle_(std::move(handle)), chunk_size_(chunk_size) {}
+
+  Result(Result &&other) noexcept
+      : handle_(std::move(other.handle_)), buffer_(std::move(other.buffer_)),
+        current_size_(other.current_size_), chunk_size_(other.chunk_size_),
+        finished_(other.finished_) {
+    other.current_size_ = 0;
+    other.finished_ = true;
+  }
+
+  Result &operator=(Result &&other) noexcept {
+    if (this != &other) {
+      handle_ = std::move(other.handle_);
+      buffer_ = std::move(other.buffer_);
+      current_size_ = other.current_size_;
+      chunk_size_ = other.chunk_size_;
+      finished_ = other.finished_;
+      other.current_size_ = 0;
+      other.finished_ = true;
+    }
+    return *this;
+  }
+
+  Result(const Result &) = delete;
+  Result &operator=(const Result &) = delete;
+
+  // Check if the result is valid (connection succeeded and response received)
+  bool is_valid() const { return handle_.is_valid(); }
+  explicit operator bool() const { return is_valid(); }
+
+  // Response status code
+  int status() const {
+    return handle_.response ? handle_.response->status : -1;
+  }
+
+  // Response headers
+  const Headers &headers() const {
+    static const Headers empty_headers;
+    return handle_.response ? handle_.response->headers : empty_headers;
+  }
+
+  std::string get_header_value(const std::string &key,
+                               const char *def = "") const {
+    return handle_.response ? handle_.response->get_header_value(key, def)
+                            : def;
+  }
+
+  bool has_header(const std::string &key) const {
+    return handle_.response ? handle_.response->has_header(key) : false;
+  }
+
+  // Error information
+  Error error() const { return handle_.error; }
+  Error read_error() const { return handle_.get_read_error(); }
+  bool has_read_error() const { return handle_.has_read_error(); }
+
+  // Streaming iteration API
+  // Call next() to read the next chunk, then access data via data()/size()
+  // Returns true if data was read, false when stream is exhausted
+  bool next() {
+    if (!handle_.is_valid() || finished_) { return false; }
+
+    if (buffer_.size() < chunk_size_) { buffer_.resize(chunk_size_); }
+
+    ssize_t n = handle_.read(&buffer_[0], chunk_size_);
+    if (n > 0) {
+      current_size_ = static_cast<size_t>(n);
+      return true;
+    }
+
+    current_size_ = 0;
+    finished_ = true;
+    return false;
+  }
+
+  // Pointer to current chunk data (valid after next() returns true)
+  const char *data() const { return buffer_.data(); }
+
+  // Size of current chunk (valid after next() returns true)
+  size_t size() const { return current_size_; }
+
+  // Convenience method: read all remaining data into a string
+  std::string read_all() {
+    std::string result;
+    while (next()) {
+      result.append(data(), size());
+    }
+    return result;
+  }
+
+private:
+  ClientImpl::StreamHandle handle_;
+  std::string buffer_;
+  size_t current_size_ = 0;
+  size_t chunk_size_;
+  bool finished_ = false;
+};
+
+// GET
+template <typename ClientType>
+inline Result Get(ClientType &cli, const std::string &path,
+                  size_t chunk_size = 8192) {
+  return Result{cli.open_stream("GET", path), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Get(ClientType &cli, const std::string &path,
+                  const Headers &headers, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("GET", path, {}, headers), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Get(ClientType &cli, const std::string &path,
+                  const Params &params, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("GET", path, params), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Get(ClientType &cli, const std::string &path,
+                  const Params &params, const Headers &headers,
+                  size_t chunk_size = 8192) {
+  return Result{cli.open_stream("GET", path, params, headers), chunk_size};
+}
+
+// POST
+template <typename ClientType>
+inline Result Post(ClientType &cli, const std::string &path,
+                   const std::string &body, const std::string &content_type,
+                   size_t chunk_size = 8192) {
+  return Result{cli.open_stream("POST", path, {}, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Post(ClientType &cli, const std::string &path,
+                   const Headers &headers, const std::string &body,
+                   const std::string &content_type, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("POST", path, {}, headers, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Post(ClientType &cli, const std::string &path,
+                   const Params &params, const std::string &body,
+                   const std::string &content_type, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("POST", path, params, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Post(ClientType &cli, const std::string &path,
+                   const Params &params, const Headers &headers,
+                   const std::string &body, const std::string &content_type,
+                   size_t chunk_size = 8192) {
+  return Result{
+      cli.open_stream("POST", path, params, headers, body, content_type),
+      chunk_size};
+}
+
+// PUT
+template <typename ClientType>
+inline Result Put(ClientType &cli, const std::string &path,
+                  const std::string &body, const std::string &content_type,
+                  size_t chunk_size = 8192) {
+  return Result{cli.open_stream("PUT", path, {}, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Put(ClientType &cli, const std::string &path,
+                  const Headers &headers, const std::string &body,
+                  const std::string &content_type, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("PUT", path, {}, headers, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Put(ClientType &cli, const std::string &path,
+                  const Params &params, const std::string &body,
+                  const std::string &content_type, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("PUT", path, params, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Put(ClientType &cli, const std::string &path,
+                  const Params &params, const Headers &headers,
+                  const std::string &body, const std::string &content_type,
+                  size_t chunk_size = 8192) {
+  return Result{
+      cli.open_stream("PUT", path, params, headers, body, content_type),
+      chunk_size};
+}
+
+// PATCH
+template <typename ClientType>
+inline Result Patch(ClientType &cli, const std::string &path,
+                    const std::string &body, const std::string &content_type,
+                    size_t chunk_size = 8192) {
+  return Result{cli.open_stream("PATCH", path, {}, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Patch(ClientType &cli, const std::string &path,
+                    const Headers &headers, const std::string &body,
+                    const std::string &content_type, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("PATCH", path, {}, headers, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Patch(ClientType &cli, const std::string &path,
+                    const Params &params, const std::string &body,
+                    const std::string &content_type, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("PATCH", path, params, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Patch(ClientType &cli, const std::string &path,
+                    const Params &params, const Headers &headers,
+                    const std::string &body, const std::string &content_type,
+                    size_t chunk_size = 8192) {
+  return Result{
+      cli.open_stream("PATCH", path, params, headers, body, content_type),
+      chunk_size};
+}
+
+// DELETE
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     size_t chunk_size = 8192) {
+  return Result{cli.open_stream("DELETE", path), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     const Headers &headers, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("DELETE", path, {}, headers), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     const std::string &body, const std::string &content_type,
+                     size_t chunk_size = 8192) {
+  return Result{cli.open_stream("DELETE", path, {}, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     const Headers &headers, const std::string &body,
+                     const std::string &content_type,
+                     size_t chunk_size = 8192) {
+  return Result{
+      cli.open_stream("DELETE", path, {}, headers, body, content_type),
+      chunk_size};
+}
+
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     const Params &params, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("DELETE", path, params), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     const Params &params, const Headers &headers,
+                     size_t chunk_size = 8192) {
+  return Result{cli.open_stream("DELETE", path, params, headers), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     const Params &params, const std::string &body,
+                     const std::string &content_type,
+                     size_t chunk_size = 8192) {
+  return Result{cli.open_stream("DELETE", path, params, {}, body, content_type),
+                chunk_size};
+}
+
+template <typename ClientType>
+inline Result Delete(ClientType &cli, const std::string &path,
+                     const Params &params, const Headers &headers,
+                     const std::string &body, const std::string &content_type,
+                     size_t chunk_size = 8192) {
+  return Result{
+      cli.open_stream("DELETE", path, params, headers, body, content_type),
+      chunk_size};
+}
+
+// HEAD
+template <typename ClientType>
+inline Result Head(ClientType &cli, const std::string &path,
+                   size_t chunk_size = 8192) {
+  return Result{cli.open_stream("HEAD", path), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Head(ClientType &cli, const std::string &path,
+                   const Headers &headers, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("HEAD", path, {}, headers), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Head(ClientType &cli, const std::string &path,
+                   const Params &params, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("HEAD", path, params), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Head(ClientType &cli, const std::string &path,
+                   const Params &params, const Headers &headers,
+                   size_t chunk_size = 8192) {
+  return Result{cli.open_stream("HEAD", path, params, headers), chunk_size};
+}
+
+// OPTIONS
+template <typename ClientType>
+inline Result Options(ClientType &cli, const std::string &path,
+                      size_t chunk_size = 8192) {
+  return Result{cli.open_stream("OPTIONS", path), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Options(ClientType &cli, const std::string &path,
+                      const Headers &headers, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("OPTIONS", path, {}, headers), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Options(ClientType &cli, const std::string &path,
+                      const Params &params, size_t chunk_size = 8192) {
+  return Result{cli.open_stream("OPTIONS", path, params), chunk_size};
+}
+
+template <typename ClientType>
+inline Result Options(ClientType &cli, const std::string &path,
+                      const Params &params, const Headers &headers,
+                      size_t chunk_size = 8192) {
+  return Result{cli.open_stream("OPTIONS", path, params, headers), chunk_size};
+}
+
+} // namespace stream
+
+namespace sse {
+
+struct SSEMessage {
+  std::string event; // Event type (default: "message")
+  std::string data;  // Event payload
+  std::string id;    // Event ID for Last-Event-ID header
+
+  SSEMessage() : event("message") {}
+
+  void clear() {
+    event = "message";
+    data.clear();
+    id.clear();
+  }
+};
+
+class SSEClient {
+public:
+  using MessageHandler = std::function<void(const SSEMessage &)>;
+  using ErrorHandler = std::function<void(Error)>;
+  using OpenHandler = std::function<void()>;
+
+  SSEClient(Client &client, const std::string &path)
+      : client_(client), path_(path) {}
+
+  SSEClient(Client &client, const std::string &path, const Headers &headers)
+      : client_(client), path_(path), headers_(headers) {}
+
+  ~SSEClient() { stop(); }
+
+  SSEClient(const SSEClient &) = delete;
+  SSEClient &operator=(const SSEClient &) = delete;
+
+  // Event handlers
+  SSEClient &on_message(MessageHandler handler) {
+    on_message_ = std::move(handler);
+    return *this;
+  }
+
+  SSEClient &on_event(const std::string &type, MessageHandler handler) {
+    event_handlers_[type] = std::move(handler);
+    return *this;
+  }
+
+  SSEClient &on_open(OpenHandler handler) {
+    on_open_ = std::move(handler);
+    return *this;
+  }
+
+  SSEClient &on_error(ErrorHandler handler) {
+    on_error_ = std::move(handler);
+    return *this;
+  }
+
+  SSEClient &set_reconnect_interval(int ms) {
+    reconnect_interval_ms_ = ms;
+    return *this;
+  }
+
+  SSEClient &set_max_reconnect_attempts(int n) {
+    max_reconnect_attempts_ = n;
+    return *this;
+  }
+
+  // State accessors
+  bool is_connected() const { return connected_.load(); }
+  const std::string &last_event_id() const { return last_event_id_; }
+
+  // Blocking start - runs event loop with auto-reconnect
+  void start() {
+    running_.store(true);
+    run_event_loop();
+  }
+
+  // Non-blocking start - runs in background thread
+  void start_async() {
+    running_.store(true);
+    async_thread_ = std::thread([this]() { run_event_loop(); });
+  }
+
+  // Stop the client (thread-safe)
+  void stop() {
+    running_.store(false);
+    client_.stop(); // Cancel any pending operations
+    if (async_thread_.joinable()) { async_thread_.join(); }
+  }
+
+private:
+  // Parse a single SSE field line
+  // Returns true if this line ends an event (blank line)
+  bool parse_sse_line(const std::string &line, SSEMessage &msg, int &retry_ms) {
+    // Blank line signals end of event
+    if (line.empty() || line == "\r") { return true; }
+
+    // Lines starting with ':' are comments (ignored)
+    if (!line.empty() && line[0] == ':') { return false; }
+
+    // Find the colon separator
+    auto colon_pos = line.find(':');
+    if (colon_pos == std::string::npos) {
+      // Line with no colon is treated as field name with empty value
+      return false;
+    }
+
+    auto field = line.substr(0, colon_pos);
+    std::string value;
+
+    // Value starts after colon, skip optional single space
+    if (colon_pos + 1 < line.size()) {
+      auto value_start = colon_pos + 1;
+      if (line[value_start] == ' ') { value_start++; }
+      value = line.substr(value_start);
+      // Remove trailing \r if present
+      if (!value.empty() && value.back() == '\r') { value.pop_back(); }
+    }
+
+    // Handle known fields
+    if (field == "event") {
+      msg.event = value;
+    } else if (field == "data") {
+      // Multiple data lines are concatenated with newlines
+      if (!msg.data.empty()) { msg.data += "\n"; }
+      msg.data += value;
+    } else if (field == "id") {
+      // Empty id is valid (clears the last event ID)
+      msg.id = value;
+    } else if (field == "retry") {
+      // Parse retry interval in milliseconds
+      try {
+        retry_ms = std::stoi(value);
+      } catch (...) {
+        // Invalid retry value, ignore
+      }
+    }
+    // Unknown fields are ignored per SSE spec
+
+    return false;
+  }
+
+  // Main event loop with auto-reconnect
+  void run_event_loop() {
+    auto reconnect_count = 0;
+
+    while (running_.load()) {
+      // Build headers, including Last-Event-ID if we have one
+      auto request_headers = headers_;
+      if (!last_event_id_.empty()) {
+        request_headers.emplace("Last-Event-ID", last_event_id_);
+      }
+
+      // Open streaming connection
+      auto result = stream::Get(client_, path_, request_headers);
+
+      // Connection error handling
+      if (!result) {
+        connected_.store(false);
+        if (on_error_) { on_error_(result.error()); }
+
+        if (!should_reconnect(reconnect_count)) { break; }
+        wait_for_reconnect();
+        reconnect_count++;
+        continue;
+      }
+
+      if (result.status() != 200) {
+        connected_.store(false);
+        // For certain errors, don't reconnect
+        if (result.status() == 204 || // No Content - server wants us to stop
+            result.status() == 404 || // Not Found
+            result.status() == 401 || // Unauthorized
+            result.status() == 403) { // Forbidden
+          if (on_error_) { on_error_(Error::Connection); }
+          break;
+        }
+
+        if (on_error_) { on_error_(Error::Connection); }
+
+        if (!should_reconnect(reconnect_count)) { break; }
+        wait_for_reconnect();
+        reconnect_count++;
+        continue;
+      }
+
+      // Connection successful
+      connected_.store(true);
+      reconnect_count = 0;
+      if (on_open_) { on_open_(); }
+
+      // Event receiving loop
+      std::string buffer;
+      SSEMessage current_msg;
+
+      while (running_.load() && result.next()) {
+        buffer.append(result.data(), result.size());
+
+        // Process complete lines in the buffer
+        size_t line_start = 0;
+        size_t newline_pos;
+
+        while ((newline_pos = buffer.find('\n', line_start)) !=
+               std::string::npos) {
+          auto line = buffer.substr(line_start, newline_pos - line_start);
+          line_start = newline_pos + 1;
+
+          // Parse the line and check if event is complete
+          auto event_complete =
+              parse_sse_line(line, current_msg, reconnect_interval_ms_);
+
+          if (event_complete && !current_msg.data.empty()) {
+            // Update last_event_id for reconnection
+            if (!current_msg.id.empty()) { last_event_id_ = current_msg.id; }
+
+            // Dispatch event to appropriate handler
+            dispatch_event(current_msg);
+
+            current_msg.clear();
+          }
+        }
+
+        // Keep unprocessed data in buffer
+        buffer.erase(0, line_start);
+      }
+
+      // Connection ended
+      connected_.store(false);
+
+      if (!running_.load()) { break; }
+
+      // Check for read errors
+      if (result.has_read_error()) {
+        if (on_error_) { on_error_(result.read_error()); }
+      }
+
+      if (!should_reconnect(reconnect_count)) { break; }
+      wait_for_reconnect();
+      reconnect_count++;
+    }
+
+    connected_.store(false);
+  }
+
+  // Dispatch event to appropriate handler
+  void dispatch_event(const SSEMessage &msg) {
+    // Check for specific event type handler first
+    auto it = event_handlers_.find(msg.event);
+    if (it != event_handlers_.end()) {
+      it->second(msg);
+      return;
+    }
+
+    // Fall back to generic message handler
+    if (on_message_) { on_message_(msg); }
+  }
+
+  // Check if we should attempt to reconnect
+  bool should_reconnect(int count) const {
+    if (!running_.load()) { return false; }
+    if (max_reconnect_attempts_ == 0) { return true; } // unlimited
+    return count < max_reconnect_attempts_;
+  }
+
+  // Wait for reconnect interval
+  void wait_for_reconnect() {
+    // Use small increments to check running_ flag frequently
+    auto waited = 0;
+    while (running_.load() && waited < reconnect_interval_ms_) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      waited += 100;
+    }
+  }
+
+  // Client and path
+  Client &client_;
+  std::string path_;
+  Headers headers_;
+
+  // Callbacks
+  MessageHandler on_message_;
+  std::map<std::string, MessageHandler> event_handlers_;
+  OpenHandler on_open_;
+  ErrorHandler on_error_;
+
+  // Configuration
+  int reconnect_interval_ms_ = 3000;
+  int max_reconnect_attempts_ = 0; // 0 = unlimited
+
+  // State
+  std::atomic<bool> running_{false};
+  std::atomic<bool> connected_{false};
+  std::string last_event_id_;
+
+  // Async support
+  std::thread async_thread_;
+};
+
+} // namespace sse
 
 // ----------------------------------------------------------------------------
 
@@ -2974,7 +3460,7 @@ inline std::string compute_etag(const FileStat &fs) {
   // If mtime cannot be determined (negative value indicates an error
   // or sentinel), do not generate an ETag. Returning a neutral / fixed
   // value like 0 could collide with a real file that legitimately has
-  // mtime == 0 (epoch) and lead to misleading validate.
+  // mtime == 0 (epoch) and lead to misleading validators.
   auto mtime_raw = fs.mtime();
   if (mtime_raw < 0) { return std::string(); }
 
@@ -5398,7 +5884,7 @@ bool read_content(Stream &strm, T &x, size_t payload_max_length, int &status,
 inline ssize_t write_request_line(Stream &strm, const std::string &method,
                                   const std::string &path) {
   std::string s = method;
-  s += " ";
+  s += ' ';
   s += path;
   s += " HTTP/1.1\r\n";
   return strm.write(s.data(), s.size());
@@ -5407,7 +5893,7 @@ inline ssize_t write_request_line(Stream &strm, const std::string &method,
 inline ssize_t write_response_line(Stream &strm, int status) {
   std::string s = "HTTP/1.1 ";
   s += std::to_string(status);
-  s += " ";
+  s += ' ';
   s += httplib::status_message(status);
   s += "\r\n";
   return strm.write(s.data(), s.size());
@@ -5670,8 +6156,8 @@ inline bool redirect(T &cli, Request &req, Response &res,
 
   auto ret = cli.send(new_req, new_res, error);
   if (ret) {
-    req = new_req;
-    res = new_res;
+    req = std::move(new_req);
+    res = std::move(new_res);
 
     if (res.location.empty()) { res.location = location; }
   }
@@ -5682,9 +6168,9 @@ inline std::string params_to_query_str(const Params &params) {
   std::string query;
 
   for (auto it = params.begin(); it != params.end(); ++it) {
-    if (it != params.begin()) { query += "&"; }
+    if (it != params.begin()) { query += '&'; }
     query += encode_query_component(it->first);
-    query += "=";
+    query += '=';
     query += encode_query_component(it->second);
   }
   return query;
@@ -5941,7 +6427,7 @@ inline bool parse_accept_header(const std::string &s,
       return;
     }
 
-    entries.push_back(accept_entry);
+    entries.push_back(std::move(accept_entry));
   });
 
   // Return false if any invalid entry was found
@@ -5958,8 +6444,8 @@ inline bool parse_accept_header(const std::string &s,
 
   // Extract sorted media types
   content_types.reserve(entries.size());
-  for (const auto &entry : entries) {
-    content_types.push_back(entry.media_type);
+  for (auto &entry : entries) {
+    content_types.push_back(std::move(entry.media_type));
   }
 
   return true;
@@ -5970,7 +6456,7 @@ public:
   FormDataParser() = default;
 
   void set_boundary(std::string &&boundary) {
-    boundary_ = boundary;
+    boundary_ = std::move(boundary);
     dash_boundary_crlf_ = dash_ + boundary_ + crlf_;
     crlf_dash_boundary_ = crlf_ + dash_ + boundary_;
   }
@@ -6443,9 +6929,9 @@ inline std::string make_content_range_header_field(
 
   std::string field = "bytes ";
   field += std::to_string(st);
-  field += "-";
+  field += '-';
   field += std::to_string(ed);
-  field += "/";
+  field += '/';
   field += std::to_string(content_length);
   return field;
 }
@@ -6822,7 +7308,7 @@ inline bool parse_www_authenticate(const Response &res,
                                     static_cast<size_t>(m.length(2)))
                          : s.substr(static_cast<size_t>(m.position(3)),
                                     static_cast<size_t>(m.length(3)));
-          auth[key] = val;
+          auth[std::move(key)] = std::move(val);
         }
         return true;
       }
@@ -6835,7 +7321,7 @@ class ContentProviderAdapter {
 public:
   explicit ContentProviderAdapter(
       ContentProviderWithoutLength &&content_provider)
-      : content_provider_(content_provider) {}
+      : content_provider_(std::move(content_provider)) {}
 
   bool operator()(size_t offset, size_t, DataSink &sink) {
     return content_provider_(offset, sink);
@@ -6845,7 +7331,188 @@ private:
   ContentProviderWithoutLength content_provider_;
 };
 
+// NOTE: https://www.rfc-editor.org/rfc/rfc9110#section-5
+namespace fields {
+
+inline bool is_token_char(char c) {
+  return std::isalnum(c) || c == '!' || c == '#' || c == '$' || c == '%' ||
+         c == '&' || c == '\'' || c == '*' || c == '+' || c == '-' ||
+         c == '.' || c == '^' || c == '_' || c == '`' || c == '|' || c == '~';
+}
+
+inline bool is_token(const std::string &s) {
+  if (s.empty()) { return false; }
+  for (auto c : s) {
+    if (!is_token_char(c)) { return false; }
+  }
+  return true;
+}
+
+inline bool is_field_name(const std::string &s) { return is_token(s); }
+
+inline bool is_vchar(char c) { return c >= 33 && c <= 126; }
+
+inline bool is_obs_text(char c) { return 128 <= static_cast<unsigned char>(c); }
+
+inline bool is_field_vchar(char c) { return is_vchar(c) || is_obs_text(c); }
+
+inline bool is_field_content(const std::string &s) {
+  if (s.empty()) { return true; }
+
+  if (s.size() == 1) {
+    return is_field_vchar(s[0]);
+  } else if (s.size() == 2) {
+    return is_field_vchar(s[0]) && is_field_vchar(s[1]);
+  } else {
+    size_t i = 0;
+
+    if (!is_field_vchar(s[i])) { return false; }
+    i++;
+
+    while (i < s.size() - 1) {
+      auto c = s[i++];
+      if (c == ' ' || c == '\t' || is_field_vchar(c)) {
+      } else {
+        return false;
+      }
+    }
+
+    return is_field_vchar(s[i]);
+  }
+}
+
+inline bool is_field_value(const std::string &s) { return is_field_content(s); }
+
+} // namespace fields
+
 } // namespace detail
+
+inline const char *status_message(int status) {
+  switch (status) {
+  case StatusCode::Continue_100: return "Continue";
+  case StatusCode::SwitchingProtocol_101: return "Switching Protocol";
+  case StatusCode::Processing_102: return "Processing";
+  case StatusCode::EarlyHints_103: return "Early Hints";
+  case StatusCode::OK_200: return "OK";
+  case StatusCode::Created_201: return "Created";
+  case StatusCode::Accepted_202: return "Accepted";
+  case StatusCode::NonAuthoritativeInformation_203:
+    return "Non-Authoritative Information";
+  case StatusCode::NoContent_204: return "No Content";
+  case StatusCode::ResetContent_205: return "Reset Content";
+  case StatusCode::PartialContent_206: return "Partial Content";
+  case StatusCode::MultiStatus_207: return "Multi-Status";
+  case StatusCode::AlreadyReported_208: return "Already Reported";
+  case StatusCode::IMUsed_226: return "IM Used";
+  case StatusCode::MultipleChoices_300: return "Multiple Choices";
+  case StatusCode::MovedPermanently_301: return "Moved Permanently";
+  case StatusCode::Found_302: return "Found";
+  case StatusCode::SeeOther_303: return "See Other";
+  case StatusCode::NotModified_304: return "Not Modified";
+  case StatusCode::UseProxy_305: return "Use Proxy";
+  case StatusCode::unused_306: return "unused";
+  case StatusCode::TemporaryRedirect_307: return "Temporary Redirect";
+  case StatusCode::PermanentRedirect_308: return "Permanent Redirect";
+  case StatusCode::BadRequest_400: return "Bad Request";
+  case StatusCode::Unauthorized_401: return "Unauthorized";
+  case StatusCode::PaymentRequired_402: return "Payment Required";
+  case StatusCode::Forbidden_403: return "Forbidden";
+  case StatusCode::NotFound_404: return "Not Found";
+  case StatusCode::MethodNotAllowed_405: return "Method Not Allowed";
+  case StatusCode::NotAcceptable_406: return "Not Acceptable";
+  case StatusCode::ProxyAuthenticationRequired_407:
+    return "Proxy Authentication Required";
+  case StatusCode::RequestTimeout_408: return "Request Timeout";
+  case StatusCode::Conflict_409: return "Conflict";
+  case StatusCode::Gone_410: return "Gone";
+  case StatusCode::LengthRequired_411: return "Length Required";
+  case StatusCode::PreconditionFailed_412: return "Precondition Failed";
+  case StatusCode::PayloadTooLarge_413: return "Payload Too Large";
+  case StatusCode::UriTooLong_414: return "URI Too Long";
+  case StatusCode::UnsupportedMediaType_415: return "Unsupported Media Type";
+  case StatusCode::RangeNotSatisfiable_416: return "Range Not Satisfiable";
+  case StatusCode::ExpectationFailed_417: return "Expectation Failed";
+  case StatusCode::ImATeapot_418: return "I'm a teapot";
+  case StatusCode::MisdirectedRequest_421: return "Misdirected Request";
+  case StatusCode::UnprocessableContent_422: return "Unprocessable Content";
+  case StatusCode::Locked_423: return "Locked";
+  case StatusCode::FailedDependency_424: return "Failed Dependency";
+  case StatusCode::TooEarly_425: return "Too Early";
+  case StatusCode::UpgradeRequired_426: return "Upgrade Required";
+  case StatusCode::PreconditionRequired_428: return "Precondition Required";
+  case StatusCode::TooManyRequests_429: return "Too Many Requests";
+  case StatusCode::RequestHeaderFieldsTooLarge_431:
+    return "Request Header Fields Too Large";
+  case StatusCode::UnavailableForLegalReasons_451:
+    return "Unavailable For Legal Reasons";
+  case StatusCode::NotImplemented_501: return "Not Implemented";
+  case StatusCode::BadGateway_502: return "Bad Gateway";
+  case StatusCode::ServiceUnavailable_503: return "Service Unavailable";
+  case StatusCode::GatewayTimeout_504: return "Gateway Timeout";
+  case StatusCode::HttpVersionNotSupported_505:
+    return "HTTP Version Not Supported";
+  case StatusCode::VariantAlsoNegotiates_506: return "Variant Also Negotiates";
+  case StatusCode::InsufficientStorage_507: return "Insufficient Storage";
+  case StatusCode::LoopDetected_508: return "Loop Detected";
+  case StatusCode::NotExtended_510: return "Not Extended";
+  case StatusCode::NetworkAuthenticationRequired_511:
+    return "Network Authentication Required";
+
+  default:
+  case StatusCode::InternalServerError_500: return "Internal Server Error";
+  }
+}
+
+inline std::string to_string(const Error error) {
+  switch (error) {
+  case Error::Success: return "Success (no error)";
+  case Error::Unknown: return "Unknown";
+  case Error::Connection: return "Could not establish connection";
+  case Error::BindIPAddress: return "Failed to bind IP address";
+  case Error::Read: return "Failed to read connection";
+  case Error::Write: return "Failed to write connection";
+  case Error::ExceedRedirectCount: return "Maximum redirect count exceeded";
+  case Error::Canceled: return "Connection handling canceled";
+  case Error::SSLConnection: return "SSL connection failed";
+  case Error::SSLLoadingCerts: return "SSL certificate loading failed";
+  case Error::SSLServerVerification: return "SSL server verification failed";
+  case Error::SSLServerHostnameVerification:
+    return "SSL server hostname verification failed";
+  case Error::UnsupportedMultipartBoundaryChars:
+    return "Unsupported HTTP multipart boundary characters";
+  case Error::Compression: return "Compression failed";
+  case Error::ConnectionTimeout: return "Connection timed out";
+  case Error::ProxyConnection: return "Proxy connection failed";
+  case Error::ConnectionClosed: return "Connection closed by server";
+  case Error::Timeout: return "Read timeout";
+  case Error::ResourceExhaustion: return "Resource exhaustion";
+  case Error::TooManyFormDataFiles: return "Too many form data files";
+  case Error::ExceedMaxPayloadSize: return "Exceeded maximum payload size";
+  case Error::ExceedUriMaxLength: return "Exceeded maximum URI length";
+  case Error::ExceedMaxSocketDescriptorCount:
+    return "Exceeded maximum socket descriptor count";
+  case Error::InvalidRequestLine: return "Invalid request line";
+  case Error::InvalidHTTPMethod: return "Invalid HTTP method";
+  case Error::InvalidHTTPVersion: return "Invalid HTTP version";
+  case Error::InvalidHeaders: return "Invalid headers";
+  case Error::MultipartParsing: return "Multipart parsing failed";
+  case Error::OpenFile: return "Failed to open file";
+  case Error::Listen: return "Failed to listen on socket";
+  case Error::GetSockName: return "Failed to get socket name";
+  case Error::UnsupportedAddressFamily: return "Unsupported address family";
+  case Error::HTTPParsing: return "HTTP parsing failed";
+  case Error::InvalidRangeHeader: return "Invalid Range header";
+  default: break;
+  }
+
+  return "Invalid";
+}
+
+inline std::ostream &operator<<(std::ostream &os, const Error &obj) {
+  os << to_string(obj);
+  os << " (" << static_cast<std::underlying_type<Error>::type>(obj) << ')';
+  return os;
+}
 
 inline std::string hosted_at(const std::string &hostname) {
   std::vector<std::string> addrs;
@@ -6880,7 +7547,7 @@ inline void hosted_at(const std::string &hostname,
     auto dummy = -1;
     if (detail::get_ip_and_port(addr, sizeof(struct sockaddr_storage), ip,
                                 dummy)) {
-      addrs.push_back(ip);
+      addrs.emplace_back(std::move(ip));
     }
   }
 }
@@ -7757,19 +8424,22 @@ inline bool RegexMatcher::match(Request &request) const {
   return std::regex_match(request.path, request.matches, regex_);
 }
 
-inline std::string make_host_and_port_string(const std::string &host, int port,
-                                             bool is_ssl) {
-  std::string result;
-
+// Enclose IPv6 address in brackets if needed
+inline std::string prepare_host_string(const std::string &host) {
   // Enclose IPv6 address in brackets (but not if already enclosed)
   if (host.find(':') == std::string::npos ||
       (!host.empty() && host[0] == '[')) {
     // IPv4, hostname, or already bracketed IPv6
-    result = host;
+    return host;
   } else {
     // IPv6 address without brackets
-    result = "[" + host + "]";
+    return "[" + host + "]";
   }
+}
+
+inline std::string make_host_and_port_string(const std::string &host, int port,
+                                             bool is_ssl) {
+  auto result = prepare_host_string(host);
 
   // Append port if not default
   if ((!is_ssl && port == 80) || (is_ssl && port == 443)) {
@@ -7779,6 +8449,12 @@ inline std::string make_host_and_port_string(const std::string &host, int port,
   }
 
   return result;
+}
+
+// Create "host:port" string always including port number (for CONNECT method)
+inline std::string
+make_host_and_port_string_always_port(const std::string &host, int port) {
+  return prepare_host_string(host) + ":" + std::to_string(port);
 }
 
 } // namespace detail
@@ -7872,7 +8548,7 @@ inline bool Server::set_mount_point(const std::string &mount_point,
   if (stat.is_dir()) {
     std::string mnt = !mount_point.empty() ? mount_point : "/";
     if (!mnt.empty() && mnt[0] == '/') {
-      base_dirs_.push_back({mnt, dir, std::move(headers)});
+      base_dirs_.push_back({std::move(mnt), dir, std::move(headers)});
       return true;
     }
   }
@@ -9206,8 +9882,6 @@ inline ClientImpl::ClientImpl(const std::string &host, int port,
                               const std::string &client_cert_path,
                               const std::string &client_key_path)
     : host_(detail::escape_abstract_namespace_unix_domain(host)), port_(port),
-      host_and_port_(
-          detail::make_host_and_port_string(host_, port, ClientImpl::is_ssl())),
       client_cert_path_(client_cert_path), client_key_path_(client_key_path) {}
 
 inline ClientImpl::~ClientImpl() {
@@ -9544,7 +10218,8 @@ inline void ClientImpl::prepare_default_headers(Request &r, bool for_stream,
     if (address_family_ == AF_UNIX) {
       r.headers.emplace("Host", "localhost");
     } else {
-      r.headers.emplace("Host", host_and_port_);
+      r.headers.emplace(
+          "Host", detail::make_host_and_port_string(host_, port_, is_ssl()));
     }
   }
 
@@ -9884,9 +10559,11 @@ inline bool ClientImpl::handle_request(Stream &strm, Request &req,
 
   if (!is_ssl() && !proxy_host_.empty() && proxy_port_ != -1) {
     auto req2 = req;
-    req2.path = "http://" + host_and_port_ + req.path;
+    req2.path = "http://" +
+                detail::make_host_and_port_string(host_, port_, false) +
+                req.path;
     ret = process_request(strm, req2, res, close_connection, error);
-    req = req2;
+    req = std::move(req2);
     req.path = req_save.path;
   } else {
     ret = process_request(strm, req, res, close_connection, error);
@@ -9910,7 +10587,7 @@ inline bool ClientImpl::handle_request(Stream &strm, Request &req,
   }
 
   if (300 < res.status && res.status < 400 && follow_location_) {
-    req = req_save;
+    req = std::move(req_save);
     ret = redirect(req, res, error);
   }
 
@@ -9938,7 +10615,7 @@ inline bool ClientImpl::handle_request(Stream &strm, Request &req,
         Response new_res;
 
         ret = send(new_req, new_res, error);
-        if (ret) { res = new_res; }
+        if (ret) { res = std::move(new_res); }
       }
     }
   }
@@ -12140,7 +12817,8 @@ inline bool SSLClient::connect_with_proxy(
           start_time, [&](Stream &strm) {
             Request req2;
             req2.method = "CONNECT";
-            req2.path = host_and_port_;
+            req2.path =
+                detail::make_host_and_port_string_always_port(host_, port_);
             if (max_timeout_msec_ > 0) {
               req2.start_time_ = std::chrono::steady_clock::now();
             }
@@ -12180,7 +12858,8 @@ inline bool SSLClient::connect_with_proxy(
                 start_time, [&](Stream &strm) {
                   Request req3;
                   req3.method = "CONNECT";
-                  req3.path = host_and_port_;
+                  req3.path = detail::make_host_and_port_string_always_port(
+                      host_, port_);
                   req3.headers.insert(detail::make_digest_authentication_header(
                       req3, auth, 1, detail::random_string(10),
                       proxy_digest_auth_username_, proxy_digest_auth_password_,
@@ -13231,375 +13910,6 @@ inline SSL_CTX *Client::ssl_context() const {
 
 // ----------------------------------------------------------------------------
 
-/*
- * C++11/14/17 Streaming API
- *
- * This section provides iterator-style streaming functionality for C++11/14/17.
- * For C++20 and later, a coroutine-based API with range-for syntax is
- * available.
- *
- * Usage:
- *   httplib::Client cli("example.com");
- *   auto result = httplib::stream::Get(cli, "/large-file");
- *   if (result) {
- *     while (result.next()) {
- *       process(result.data(), result.size());
- *     }
- *   }
- */
-
-namespace stream {
-
-class Result {
-public:
-  Result() : chunk_size_(8192) {}
-
-  explicit Result(ClientImpl::StreamHandle &&handle, size_t chunk_size = 8192)
-      : handle_(std::move(handle)), chunk_size_(chunk_size) {}
-
-  Result(Result &&other) noexcept
-      : handle_(std::move(other.handle_)), buffer_(std::move(other.buffer_)),
-        current_size_(other.current_size_), chunk_size_(other.chunk_size_),
-        finished_(other.finished_) {
-    other.current_size_ = 0;
-    other.finished_ = true;
-  }
-
-  Result &operator=(Result &&other) noexcept {
-    if (this != &other) {
-      handle_ = std::move(other.handle_);
-      buffer_ = std::move(other.buffer_);
-      current_size_ = other.current_size_;
-      chunk_size_ = other.chunk_size_;
-      finished_ = other.finished_;
-      other.current_size_ = 0;
-      other.finished_ = true;
-    }
-    return *this;
-  }
-
-  Result(const Result &) = delete;
-  Result &operator=(const Result &) = delete;
-
-  // Check if the result is valid (connection succeeded and response received)
-  bool is_valid() const { return handle_.is_valid(); }
-  explicit operator bool() const { return is_valid(); }
-
-  // Response status code
-  int status() const {
-    return handle_.response ? handle_.response->status : -1;
-  }
-
-  // Response headers
-  const Headers &headers() const {
-    static const Headers empty_headers;
-    return handle_.response ? handle_.response->headers : empty_headers;
-  }
-
-  std::string get_header_value(const std::string &key,
-                               const char *def = "") const {
-    return handle_.response ? handle_.response->get_header_value(key, def)
-                            : def;
-  }
-
-  bool has_header(const std::string &key) const {
-    return handle_.response ? handle_.response->has_header(key) : false;
-  }
-
-  // Error information
-  Error error() const { return handle_.error; }
-  Error read_error() const { return handle_.get_read_error(); }
-  bool has_read_error() const { return handle_.has_read_error(); }
-
-  // Streaming iteration API
-  // Call next() to read the next chunk, then access data via data()/size()
-  // Returns true if data was read, false when stream is exhausted
-  bool next() {
-    if (!handle_.is_valid() || finished_) { return false; }
-
-    if (buffer_.size() < chunk_size_) { buffer_.resize(chunk_size_); }
-
-    ssize_t n = handle_.read(&buffer_[0], chunk_size_);
-    if (n > 0) {
-      current_size_ = static_cast<size_t>(n);
-      return true;
-    }
-
-    current_size_ = 0;
-    finished_ = true;
-    return false;
-  }
-
-  // Pointer to current chunk data (valid after next() returns true)
-  const char *data() const { return buffer_.data(); }
-
-  // Size of current chunk (valid after next() returns true)
-  size_t size() const { return current_size_; }
-
-  // Convenience method: read all remaining data into a string
-  std::string read_all() {
-    std::string result;
-    while (next()) {
-      result.append(data(), size());
-    }
-    return result;
-  }
-
-private:
-  ClientImpl::StreamHandle handle_;
-  std::string buffer_;
-  size_t current_size_ = 0;
-  size_t chunk_size_;
-  bool finished_ = false;
-};
-
-// GET
-template <typename ClientType>
-inline Result Get(ClientType &cli, const std::string &path,
-                  size_t chunk_size = 8192) {
-  return Result{cli.open_stream("GET", path), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Get(ClientType &cli, const std::string &path,
-                  const Headers &headers, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("GET", path, {}, headers), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Get(ClientType &cli, const std::string &path,
-                  const Params &params, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("GET", path, params), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Get(ClientType &cli, const std::string &path,
-                  const Params &params, const Headers &headers,
-                  size_t chunk_size = 8192) {
-  return Result{cli.open_stream("GET", path, params, headers), chunk_size};
-}
-
-// POST
-template <typename ClientType>
-inline Result Post(ClientType &cli, const std::string &path,
-                   const std::string &body, const std::string &content_type,
-                   size_t chunk_size = 8192) {
-  return Result{cli.open_stream("POST", path, {}, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Post(ClientType &cli, const std::string &path,
-                   const Headers &headers, const std::string &body,
-                   const std::string &content_type, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("POST", path, {}, headers, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Post(ClientType &cli, const std::string &path,
-                   const Params &params, const std::string &body,
-                   const std::string &content_type, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("POST", path, params, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Post(ClientType &cli, const std::string &path,
-                   const Params &params, const Headers &headers,
-                   const std::string &body, const std::string &content_type,
-                   size_t chunk_size = 8192) {
-  return Result{
-      cli.open_stream("POST", path, params, headers, body, content_type),
-      chunk_size};
-}
-
-// PUT
-template <typename ClientType>
-inline Result Put(ClientType &cli, const std::string &path,
-                  const std::string &body, const std::string &content_type,
-                  size_t chunk_size = 8192) {
-  return Result{cli.open_stream("PUT", path, {}, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Put(ClientType &cli, const std::string &path,
-                  const Headers &headers, const std::string &body,
-                  const std::string &content_type, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("PUT", path, {}, headers, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Put(ClientType &cli, const std::string &path,
-                  const Params &params, const std::string &body,
-                  const std::string &content_type, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("PUT", path, params, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Put(ClientType &cli, const std::string &path,
-                  const Params &params, const Headers &headers,
-                  const std::string &body, const std::string &content_type,
-                  size_t chunk_size = 8192) {
-  return Result{
-      cli.open_stream("PUT", path, params, headers, body, content_type),
-      chunk_size};
-}
-
-// PATCH
-template <typename ClientType>
-inline Result Patch(ClientType &cli, const std::string &path,
-                    const std::string &body, const std::string &content_type,
-                    size_t chunk_size = 8192) {
-  return Result{cli.open_stream("PATCH", path, {}, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Patch(ClientType &cli, const std::string &path,
-                    const Headers &headers, const std::string &body,
-                    const std::string &content_type, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("PATCH", path, {}, headers, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Patch(ClientType &cli, const std::string &path,
-                    const Params &params, const std::string &body,
-                    const std::string &content_type, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("PATCH", path, params, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Patch(ClientType &cli, const std::string &path,
-                    const Params &params, const Headers &headers,
-                    const std::string &body, const std::string &content_type,
-                    size_t chunk_size = 8192) {
-  return Result{
-      cli.open_stream("PATCH", path, params, headers, body, content_type),
-      chunk_size};
-}
-
-// DELETE
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     size_t chunk_size = 8192) {
-  return Result{cli.open_stream("DELETE", path), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     const Headers &headers, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("DELETE", path, {}, headers), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     const std::string &body, const std::string &content_type,
-                     size_t chunk_size = 8192) {
-  return Result{cli.open_stream("DELETE", path, {}, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     const Headers &headers, const std::string &body,
-                     const std::string &content_type,
-                     size_t chunk_size = 8192) {
-  return Result{
-      cli.open_stream("DELETE", path, {}, headers, body, content_type),
-      chunk_size};
-}
-
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     const Params &params, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("DELETE", path, params), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     const Params &params, const Headers &headers,
-                     size_t chunk_size = 8192) {
-  return Result{cli.open_stream("DELETE", path, params, headers), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     const Params &params, const std::string &body,
-                     const std::string &content_type,
-                     size_t chunk_size = 8192) {
-  return Result{cli.open_stream("DELETE", path, params, {}, body, content_type),
-                chunk_size};
-}
-
-template <typename ClientType>
-inline Result Delete(ClientType &cli, const std::string &path,
-                     const Params &params, const Headers &headers,
-                     const std::string &body, const std::string &content_type,
-                     size_t chunk_size = 8192) {
-  return Result{
-      cli.open_stream("DELETE", path, params, headers, body, content_type),
-      chunk_size};
-}
-
-// HEAD
-template <typename ClientType>
-inline Result Head(ClientType &cli, const std::string &path,
-                   size_t chunk_size = 8192) {
-  return Result{cli.open_stream("HEAD", path), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Head(ClientType &cli, const std::string &path,
-                   const Headers &headers, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("HEAD", path, {}, headers), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Head(ClientType &cli, const std::string &path,
-                   const Params &params, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("HEAD", path, params), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Head(ClientType &cli, const std::string &path,
-                   const Params &params, const Headers &headers,
-                   size_t chunk_size = 8192) {
-  return Result{cli.open_stream("HEAD", path, params, headers), chunk_size};
-}
-
-// OPTIONS
-template <typename ClientType>
-inline Result Options(ClientType &cli, const std::string &path,
-                      size_t chunk_size = 8192) {
-  return Result{cli.open_stream("OPTIONS", path), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Options(ClientType &cli, const std::string &path,
-                      const Headers &headers, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("OPTIONS", path, {}, headers), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Options(ClientType &cli, const std::string &path,
-                      const Params &params, size_t chunk_size = 8192) {
-  return Result{cli.open_stream("OPTIONS", path, params), chunk_size};
-}
-
-template <typename ClientType>
-inline Result Options(ClientType &cli, const std::string &path,
-                      const Params &params, const Headers &headers,
-                      size_t chunk_size = 8192) {
-  return Result{cli.open_stream("OPTIONS", path, params, headers), chunk_size};
-}
-
-} // namespace stream
 } // namespace httplib
 
 #endif // CPPHTTPLIB_HTTPLIB_H

@@ -116,6 +116,59 @@ void HttpServer::SetupRoutes_() {
         photo_service.GetListByFamilyId();
     });
 
+    server_.Post("/photo/list", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Проверка, что пришел multipart/form-data
+        if (!req.is_multipart_form_data()) {
+            api_response.status = "ERROR";
+            api_response.code   = 400;
+            api_response.msg    = "Expected multipart/form-data";
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        if (req.form.files.empty()) {
+            api_response.status = "ERROR";
+            api_response.code   = 400;
+            api_response.msg    = "No files uploaded";
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        rapidjson::Document data_json;
+        data_json.SetArray();
+        auto& allocator = data_json.GetAllocator();
+
+        for (const auto& [field_name, file] : req.form.files) {
+            rapidjson::Value file_obj(rapidjson::kObjectType);
+            file_obj.AddMember(
+                "field_name", rapidjson::Value(field_name.c_str(), allocator), allocator);
+            file_obj.AddMember(
+                "filename", rapidjson::Value(file.filename.c_str(), allocator), allocator);
+            file_obj.AddMember("size", static_cast<uint64_t>(file.content.size()), allocator);
+            file_obj.AddMember(
+                "content_type", rapidjson::Value(file.content_type.c_str(), allocator), allocator);
+            file_obj.AddMember(
+                "name_in_form", rapidjson::Value(file.name.c_str(), allocator), allocator);
+            file_obj.AddMember(
+                "filename_length", static_cast<uint64_t>(file.filename.size()), allocator);
+            file_obj.AddMember(
+                "content_length", static_cast<uint64_t>(file.content.size()), allocator);
+
+            data_json.PushBack(file_obj, allocator);
+        }
+
+        api_response.status = "OK";
+        api_response.code   = 200;
+        api_response.msg    = "Files uploaded successfully";
+
+        utils::http_response::send(res, api_response, data_json);
+    });
+
     // Video
     server_.Get("/video", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
