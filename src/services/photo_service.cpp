@@ -159,7 +159,8 @@ void PhotoService::UploadListByFamilyId() {
 
     std::vector<Photo> photo_vector;
     for (const auto& [field_name, file] : req_.form.files) {
-        int width = 0, height = 0, channels = 0;
+        int width = 0;
+        int height = 0;
 
         if (!stbi_info_from_memory(reinterpret_cast<const unsigned char*>(file.content.data()),
                                    static_cast<int>(file.content.size()),
