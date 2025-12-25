@@ -115,36 +115,6 @@ void HttpServer::SetupRoutes_() {
 
         PhotoService photo_service(req, res, body_json, api_response);
         photo_service.UploadListByFamilyId();
-
-        // rapidjson::Document data_json;
-        // data_json.SetArray();
-        // auto& allocator = data_json.GetAllocator();
-        //
-        // for (const auto& [field_name, file] : req.form.files) {
-        //     rapidjson::Value file_obj(rapidjson::kObjectType);
-        //     file_obj.AddMember(
-        //         "field_name", rapidjson::Value(field_name.c_str(), allocator), allocator);
-        //     file_obj.AddMember(
-        //         "filename", rapidjson::Value(file.filename.c_str(), allocator), allocator);
-        //     file_obj.AddMember("size", static_cast<uint64_t>(file.content.size()), allocator);
-        //     file_obj.AddMember(
-        //         "content_type", rapidjson::Value(file.content_type.c_str(), allocator),
-        //         allocator);
-        //     file_obj.AddMember(
-        //         "name_in_form", rapidjson::Value(file.name.c_str(), allocator), allocator);
-        //     file_obj.AddMember(
-        //         "filename_length", static_cast<uint64_t>(file.filename.size()), allocator);
-        //     file_obj.AddMember(
-        //         "content_length", static_cast<uint64_t>(file.content.size()), allocator);
-        //
-        //     data_json.PushBack(file_obj, allocator);
-        // }
-        //
-        // api_response.status = "OK";
-        // api_response.code   = 200;
-        // api_response.msg    = "Files uploaded successfully";
-
-        utils::http_response::send(res, api_response);
     });
 
     // Video

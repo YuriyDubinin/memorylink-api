@@ -149,18 +149,47 @@ void PhotoService::GetListByFamilyId() {
 }
 
 void PhotoService::UploadListByFamilyId() {
-    // family_id
     std::int64_t family_id = 0;
     if (auto it = req_.form.fields.find("family_id"); it != req_.form.fields.end()) {
-        family_id = std::stoll(it->second.content);
+        try {
+            family_id = std::stoll(it->second.content);
+        } catch (const std::exception&) {
+            api_response_.status = "ERROR";
+            api_response_.code   = 400;
+            api_response_.msg    = "Invalid family_id";
+            rapidjson::Document empty_data;
+            empty_data.SetObject();
+            utils::http_response::send(res_, api_response_, empty_data);
+            return;
+        }
     }
 
-    rapidjson::Document data;
-    data.SetObject();
-    auto& allocator = data.GetAllocator();
+    std::vector<Photo> photo_vector;
+    for (const auto& [field_name, file] : req_.form.files) {
+        Photo photo;
+        photo.family_id    = family_id;
+        photo.name         = file.filename;
+        photo.mime_type    = file.content_type;
+        photo.file_size_mb = static_cast<double>(file.content.size()) / (1024.0 * 1024.0);
+        photo.is_active    = true;
+        photo.hash         = utils::UIDGenerator::generate();
 
-    std::string uid = utils::UIDGenerator::generate();
-    // DBRegistry::PhotoRepository().InsertListByFamilyId(family_id, );
+        // photo.resolution_width_px = ...;
+        // photo.resolution_height_px = ...;
 
-    utils::http_response::send(res_, api_response_, data);
+        photo_vector.push_back(std::move(photo));
+    }
+
+    DBRegistry::PhotoRepository().InsertListByFamilyId(family_id, photo_vector);
+
+    rapidjson::Document data_json;
+    data_json.SetObject();
+    auto& allocator = data_json.GetAllocator();
+    data_json.AddMember("count", static_cast<uint64_t>(photo_vector.size()), allocator);
+
+    api_response_.status = "OK";
+    api_response_.code   = 200;
+    api_response_.msg    = "Photos uploaded successfully";
+
+    utils::http_response::send(res_, api_response_, data_json);
 }

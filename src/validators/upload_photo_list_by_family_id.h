@@ -14,5 +14,7 @@
 #include <utils/http_response.h>
 
 namespace validate {
-    bool upload_photo_list_by_family_id(const httplib::Request& req, const rapidjson::Document& body_json, ApiResponse& api_response);
+    bool upload_photo_list_by_family_id(const httplib::Request&    req,
+                                        const rapidjson::Document& body_json,
+                                        ApiResponse&               api_response);
 }

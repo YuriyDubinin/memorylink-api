@@ -1,7 +1,9 @@
 #include "get_photo_list_by_family_id.h"
 
 namespace validate {
-    bool upload_photo_list_by_family_id(const httplib::Request& req, const rapidjson::Document& body_json, ApiResponse& api_response) {
+    bool upload_photo_list_by_family_id(const httplib::Request&    req,
+                                        const rapidjson::Document& body_json,
+                                        ApiResponse&               api_response) {
         if (req.form.fields.empty()) {
             api_response.status = "ERROR";
             api_response.code   = 400;
@@ -19,11 +21,11 @@ namespace validate {
         }
 
         const std::string family_id_str = family_it->second.content;
-        std::int64_t family_id = 0;
+        std::int64_t      family_id     = 0;
 
         try {
-            size_t       pos       = 0;
-            family_id = std::stoll(family_id_str, &pos);
+            size_t pos = 0;
+            family_id  = std::stoll(family_id_str, &pos);
 
             // Проверка на число
             if (pos != family_id_str.size()) {
