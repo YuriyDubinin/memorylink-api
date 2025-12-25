@@ -40,7 +40,7 @@ bool S3Client::Upload(const std::string& bucket,
 
     std::ifstream file(file_path, std::ios::binary | std::ios::ate);
     if (!file) {
-        std::cerr << "[S3Client][UPLOAD] Cannot open file: " << file_path << "\n";
+        std::cerr << "[S3Client]: [Upload]: Cannot open file: " << file_path << "\n";
         return false;
     }
 
@@ -68,7 +68,7 @@ bool S3Client::UploadSingle(const std::string& bucket,
 
     auto outcome = client_->PutObject(request);
     if (!outcome.IsSuccess()) {
-        std::cerr << "[S3Client][UPLOAD] " << outcome.GetError().GetMessage() << "\n";
+        std::cerr << "[S3Client]: [UploadSingle]: " << outcome.GetError().GetMessage() << "\n";
         return false;
     }
     return true;
@@ -151,7 +151,7 @@ bool S3Client::Download(const std::string& bucket,
 
     auto outcome = client_->GetObject(request);
     if (!outcome.IsSuccess()) {
-        std::cerr << "[S3Client][DOWNLOAD] " << outcome.GetError().GetMessage() << "\n";
+        std::cerr << "[S3Client]: [UploadMultipart]: " << outcome.GetError().GetMessage() << "\n";
         return false;
     }
 
@@ -181,4 +181,28 @@ void InitS3Client(const std::string& access_key,
     if (!global_s3_client) {
         global_s3_client = std::make_shared<S3Client>(access_key, secret_key, endpoint, region);
     }
+}
+
+// s3_client.cpp
+bool S3Client::UploadFromMemory(const std::string&       bucket,
+                                const std::string&       key,
+                                const std::vector<char>& data,
+                                const std::string&       content_type) {
+    std::lock_guard<std::mutex> lock(client_mutex_);
+
+    Aws::S3::Model::PutObjectRequest request;
+    request.SetBucket(bucket);
+    request.SetKey(key);
+    request.SetContentType(content_type);
+
+    auto stream = Aws::MakeShared<Aws::StringStream>("UploadStream");
+    stream->write(data.data(), data.size());
+    request.SetBody(stream);
+
+    auto outcome = client_->PutObject(request);
+    if (!outcome.IsSuccess()) {
+        std::cerr << "[S3Client]: [UploadFromMemory] " << outcome.GetError().GetMessage() << "\n";
+        return false;
+    }
+    return true;
 }

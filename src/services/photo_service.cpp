@@ -150,17 +150,28 @@ void PhotoService::GetListByFamilyId() {
 
 void PhotoService::UploadListByFamilyId() {
     std::int64_t family_id = 0;
-    auto const   it        = req_.form.fields.find("family_id");
-    family_id              = std::stoll(it->second.content);
+    auto         it        = req_.form.fields.find("family_id");
+    if (it != req_.form.fields.end()) {
+        family_id = std::stoll(it->second.content);
+    }
 
     rapidjson::Document data_json;
     data_json.SetObject();
     auto& allocator = data_json.GetAllocator();
 
     std::vector<Photo> photo_vector;
+    auto               s3_client = GetS3Client();
+
+    if (!s3_client) {
+        api_response_.status = "ERROR";
+        api_response_.code   = 500;
+        api_response_.msg    = "S3 client not initialized";
+        utils::http_response::send(res_, api_response_, data_json);
+        return;
+    }
+
     for (const auto& [field_name, file] : req_.form.files) {
-        int width = 0;
-        int height = 0;
+        int width = 0, height = 0;
 
         if (!stbi_info_from_memory(reinterpret_cast<const unsigned char*>(file.content.data()),
                                    static_cast<int>(file.content.size()),
@@ -179,6 +190,15 @@ void PhotoService::UploadListByFamilyId() {
         photo.hash                 = utils::UIDGenerator::generate();
         photo.resolution_width_px  = width;
         photo.resolution_height_px = height;
+
+        std::string s3_key = "photos/" + photo.hash;
+
+        // Загрузка напрямую из памяти
+        std::vector<char> data(file.content.begin(), file.content.end());
+        if (!s3_client->UploadFromMemory("memorylink-bucket", s3_key, data, photo.mime_type)) {
+            std::cerr << "[PhotoService]: Failed to upload: " << file.filename << "\n";
+            continue; // не изображение - пропуск
+        }
 
         photo_vector.emplace_back(std::move(photo));
     }

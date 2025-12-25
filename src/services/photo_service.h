@@ -11,6 +11,7 @@
 #include <models/access_token_data.h>
 #include <models/api_response.h>
 #include <models/photo.h>
+#include <network/s3_client.h>
 #include <repositories/pg_photo_repository.h>
 #include <utils/access_token_crypto.h>
 #include <utils/extract_bearer_token.h>

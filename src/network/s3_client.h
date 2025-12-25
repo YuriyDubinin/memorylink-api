@@ -37,6 +37,11 @@ public:
 
     bool Delete(const std::string& bucket, const std::string& key);
 
+    bool UploadFromMemory(const std::string&       bucket,
+                          const std::string&       key,
+                          const std::vector<char>& data,
+                          const std::string&       content_type);
+
 private:
     bool UploadSingle(const std::string& bucket,
                       const std::string& key,
