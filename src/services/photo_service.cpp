@@ -1,9 +1,10 @@
 #include "photo_service.h"
 
-PhotoService::PhotoService(httplib::Response&   res,
-                           rapidjson::Document& body_json,
-                           ApiResponse&         api_response)
-    : res_(res), body_json_(body_json), api_response_(api_response) {}
+PhotoService::PhotoService(const httplib::Request& req,
+                           httplib::Response&      res,
+                           rapidjson::Document&    body_json,
+                           ApiResponse&            api_response)
+    : req_(req), res_(res), body_json_(body_json), api_response_(api_response) {}
 
 void PhotoService::GetById() {
     const std::int64_t id = body_json_["id"].GetInt64();
@@ -23,9 +24,12 @@ void PhotoService::GetById() {
         return;
     }
 
-    const std::string encrypted_token = body_json_["access_token"].GetString();
-    const Config&     cfg             = ConfigManager::Get();
-    AccessTokenData   token_data =
+    auto               auth_it         = req_.headers.find("Authorization");
+    const std::string& auth_header     = auth_it->second;
+    const std::string  bearer          = "Bearer ";
+    const std::string  encrypted_token = auth_header.substr(bearer.size());
+    const Config&      cfg             = ConfigManager::Get();
+    AccessTokenData    token_data =
         utils::security::decrypt_access_token_struct(encrypted_token, cfg.pepper, cfg.salt);
 
     if (photo->family_id != token_data.family_id) {

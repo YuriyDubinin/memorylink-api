@@ -19,7 +19,10 @@
 
 class PhotoService {
 public:
-    PhotoService(httplib::Response& res, rapidjson::Document& body_json, ApiResponse& api_response);
+    PhotoService(const httplib::Request& req,
+                 httplib::Response&      res,
+                 rapidjson::Document&    body_json,
+                 ApiResponse&            api_response);
 
     ~PhotoService() = default;
 
@@ -28,7 +31,8 @@ public:
     void UploadListByFamilyId();
 
 private:
-    httplib::Response&   res_;
-    rapidjson::Document& body_json_;
-    ApiResponse&         api_response_;
+    const httplib::Request& req_;
+    httplib::Response&      res_;
+    rapidjson::Document&    body_json_;
+    ApiResponse&            api_response_;
 };

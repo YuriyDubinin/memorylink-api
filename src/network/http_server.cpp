@@ -74,16 +74,12 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::json_request(req, res, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response) ||
+            !validate::get_photo_by_id(body_json, api_response)) {
             return;
         }
 
-        if (!validate::get_photo_by_id(body_json, api_response)) {
-            utils::http_response::send(res, api_response);
-            return;
-        }
-
-        PhotoService photo_service(res, body_json, api_response);
+        PhotoService photo_service(req, res, body_json, api_response);
         photo_service.GetById();
     });
 
@@ -103,7 +99,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        PhotoService photo_service(res, body_json, api_response);
+        PhotoService photo_service(req, res, body_json, api_response);
         photo_service.GetListByFamilyId();
     });
 
@@ -124,7 +120,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        PhotoService photo_service(res, body_json, api_response);
+        PhotoService photo_service(req, res, body_json, api_response);
         photo_service.UploadListByFamilyId();
 
         // rapidjson::Document data_json;
