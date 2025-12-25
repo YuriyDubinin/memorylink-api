@@ -15,6 +15,7 @@
 #include <utils/access_token_crypto.h>
 #include <utils/format_pg_timestamp.h>
 #include <utils/http_response.h>
+#include <validators/upload_photo_list_by_family_id.h>
 
 class PhotoService {
 public:
@@ -24,6 +25,7 @@ public:
 
     void GetById();
     void GetListByFamilyId();
+    void UploadListByFamilyId();
 
 private:
     httplib::Response&   res_;

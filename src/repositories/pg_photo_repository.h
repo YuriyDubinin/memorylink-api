@@ -20,6 +20,8 @@ public:
     PhotoListResult
     GetListByFamilyId(std::int64_t family_id, std::size_t limit, std::size_t offset);
 
+    void CreateListByFamilyId(std::int64_t family_id, std::vector<Photo>& photo_list);
+
 private:
     PostgresConnection& db_;
 };

@@ -24,6 +24,7 @@
 #include <validators/get_user_by_id.h>
 #include <validators/get_video_by_id.h>
 #include <validators/get_video_list_by_family_id.h>
+#include <validators/file_request.h>
 #include <validators/json.h>
 
 class HttpServer {
@@ -47,6 +48,7 @@ private:
         // Photo
         "/photo",
         "/photo/list",
+        "/photo/list/upload",
         // Video
         "video",
         "/video/list"};

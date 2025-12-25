@@ -106,3 +106,42 @@ PhotoListResult PgPhotoRepository::GetListByFamilyId(std::int64_t family_id,
                                  e.what());
     }
 }
+
+void PgPhotoRepository::CreateListByFamilyId(std::int64_t        family_id,
+                                             std::vector<Photo>& photo_list) {
+    if (photo_list.empty())
+        return;
+
+    try {
+        pqxx::work        txn(db_.raw());
+        std::stringstream ss;
+        ss << "INSERT INTO photos (family_id, name, description, file_size_mb, mime_type, "
+              "resolution_width_px, resolution_height_px, hash, is_active) VALUES ";
+
+        for (size_t i = 0; i < photo_list.size(); ++i) {
+            const auto& photo = photo_list[i];
+
+            ss << "(" << family_id << ", " << txn.quote(photo.name) << ", "
+               << (photo.description ? txn.quote(*photo.description) : "NULL") << ", " << std::fixed
+               << std::setprecision(2) << photo.file_size_mb << ", " << txn.quote(photo.mime_type)
+               << ", "
+               << (photo.resolution_width_px ? std::to_string(*photo.resolution_width_px) : "NULL")
+               << ", "
+               << (photo.resolution_height_px ? std::to_string(*photo.resolution_height_px)
+                                              : "NULL")
+               << ", " << txn.quote(photo.hash) << ", " << (photo.is_active ? "true" : "false")
+               << ")";
+
+            if (i != photo_list.size() - 1)
+                ss << ", ";
+        }
+
+        ss << ";";
+
+        txn.exec(ss.str());
+        txn.commit();
+    } catch (const std::exception& e) {
+        std::cerr << "PgPhotoRepository::CreateListByFamilyId failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("CreateListByFamilyId failed: ") + e.what());
+    }
+}
