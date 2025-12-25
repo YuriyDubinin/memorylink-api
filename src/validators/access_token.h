@@ -14,5 +14,5 @@
 #include <utils/access_token_crypto.h>
 
 namespace validate {
-    bool access_token(const rapidjson::Document& body_json, ApiResponse& api_response);
+    bool access_token(const httplib::Request& req, ApiResponse& api_response);
 }

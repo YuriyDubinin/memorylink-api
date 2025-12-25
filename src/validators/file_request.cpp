@@ -1,8 +1,7 @@
 #include "default_request.h"
 
 namespace validate {
-    bool
-    file_request(const httplib::Request& req, ApiResponse& api_response) {
+    bool file_request(const httplib::Request& req, ApiResponse& api_response) {
         if (!req.is_multipart_form_data()) {
             api_response.status = "ERROR";
             api_response.code   = 400;

@@ -1,7 +1,9 @@
 #include "get_user_by_id.h"
 
 namespace validate {
-    bool get_user_by_id(const rapidjson::Document& body_json, ApiResponse& api_response) {
+    bool get_user_by_id(const httplib::Request&    req,
+                        const rapidjson::Document& body_json,
+                        ApiResponse&               api_response) {
         if (!body_json.HasMember("id")) {
             api_response.status = "ERROR";
             api_response.code   = 400;
@@ -16,7 +18,10 @@ namespace validate {
             return false;
         }
 
-        const std::string encrypted_token = body_json["access_token"].GetString();
+        auto               auth_it         = req.headers.find("Authorization");
+        const std::string& auth_header     = auth_it->second;
+        const std::string  bearer          = "Bearer ";
+        const std::string  encrypted_token = auth_header.substr(bearer.size());
 
         try {
             const Config&   cfg = ConfigManager::Get();

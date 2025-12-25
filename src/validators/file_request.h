@@ -13,6 +13,5 @@
 #include <validators/json.h>
 
 namespace validate {
-    bool
-    file_request(const httplib::Request& req, ApiResponse& api_response);
+    bool file_request(const httplib::Request& req, ApiResponse& api_response);
 }

@@ -25,7 +25,7 @@ void HttpServer::SetupRoutes_() {
             return;
         }
 
-        if (!validate::get_user_by_id(body_json, api_response)) {
+        if (!validate::get_user_by_id(req, body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
