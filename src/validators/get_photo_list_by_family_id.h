@@ -13,6 +13,7 @@
 #include <utils/http_response.h>
 
 namespace validate {
-    bool get_photo_list_by_family_id(const rapidjson::Document& body_json,
+    bool get_photo_list_by_family_id(const httplib::Request&    req,
+                                     const rapidjson::Document& body_json,
                                      ApiResponse&               api_response);
 }

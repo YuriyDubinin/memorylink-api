@@ -12,7 +12,6 @@
 #include <rapidjson/writer.h>
 
 namespace utils::security {
-
     static std::string to_hex(const std::vector<unsigned char>& data) {
         std::stringstream ss;
         for (auto b : data)

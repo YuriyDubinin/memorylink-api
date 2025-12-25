@@ -88,21 +88,6 @@ void PhotoService::GetListByFamilyId() {
     const std::size_t  limit     = body_json_["limit"].GetUint64();
     const std::size_t  offset    = body_json_["offset"].GetUint64();
 
-    const std::string encrypted_token = body_json_["access_token"].GetString();
-    const Config&     cfg             = ConfigManager::Get();
-    AccessTokenData   token_data =
-        utils::security::decrypt_access_token_struct(encrypted_token, cfg.pepper, cfg.salt);
-
-    if (family_id != token_data.family_id) {
-        api_response_.status = "ERROR";
-        api_response_.code   = 403;
-        api_response_.msg    = "Access denied: user is attempting an unauthorized action";
-
-        utils::http_response::send(res_, api_response_);
-
-        return;
-    }
-
     rapidjson::Document data;
     data.SetObject();
     auto& allocator = data.GetAllocator();

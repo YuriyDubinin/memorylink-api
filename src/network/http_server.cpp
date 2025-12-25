@@ -90,11 +90,8 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::json_request(req, res, body_json, api_response)) {
-            return;
-        }
-
-        if (!validate::get_photo_list_by_family_id(body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response) ||
+            !validate::get_photo_list_by_family_id(req, body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
@@ -103,97 +100,97 @@ void HttpServer::SetupRoutes_() {
         photo_service.GetListByFamilyId();
     });
 
-    server_.Post("/photo/list/upload", [](const httplib::Request& req, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-
-        rapidjson::Document body_json;
-        ApiResponse         api_response;
-
-        // Validation
-        if (!validate::file_request(req, api_response)) {
-            utils::http_response::send(res, api_response);
-            return;
-        }
-
-        if (!validate::upload_photo_list_by_family_id(req, api_response)) {
-            utils::http_response::send(res, api_response);
-            return;
-        }
-
-        PhotoService photo_service(req, res, body_json, api_response);
-        photo_service.UploadListByFamilyId();
-
-        // rapidjson::Document data_json;
-        // data_json.SetArray();
-        // auto& allocator = data_json.GetAllocator();
-        //
-        // for (const auto& [field_name, file] : req.form.files) {
-        //     rapidjson::Value file_obj(rapidjson::kObjectType);
-        //     file_obj.AddMember(
-        //         "field_name", rapidjson::Value(field_name.c_str(), allocator), allocator);
-        //     file_obj.AddMember(
-        //         "filename", rapidjson::Value(file.filename.c_str(), allocator), allocator);
-        //     file_obj.AddMember("size", static_cast<uint64_t>(file.content.size()), allocator);
-        //     file_obj.AddMember(
-        //         "content_type", rapidjson::Value(file.content_type.c_str(), allocator),
-        //         allocator);
-        //     file_obj.AddMember(
-        //         "name_in_form", rapidjson::Value(file.name.c_str(), allocator), allocator);
-        //     file_obj.AddMember(
-        //         "filename_length", static_cast<uint64_t>(file.filename.size()), allocator);
-        //     file_obj.AddMember(
-        //         "content_length", static_cast<uint64_t>(file.content.size()), allocator);
-        //
-        //     data_json.PushBack(file_obj, allocator);
-        // }
-        //
-        // api_response.status = "OK";
-        // api_response.code   = 200;
-        // api_response.msg    = "Files uploaded successfully";
-
-        utils::http_response::send(res, api_response);
-    });
+    // server_.Post("/photo/list/upload", [](const httplib::Request& req, httplib::Response& res) {
+    //     res.set_header("Access-Control-Allow-Origin", "*");
+    //
+    //     rapidjson::Document body_json;
+    //     ApiResponse         api_response;
+    //
+    //     // Validation
+    //     if (!validate::file_request(req, api_response)) {
+    //         utils::http_response::send(res, api_response);
+    //         return;
+    //     }
+    //
+    //     if (!validate::upload_photo_list_by_family_id(req, api_response)) {
+    //         utils::http_response::send(res, api_response);
+    //         return;
+    //     }
+    //
+    //     PhotoService photo_service(req, res, body_json, api_response);
+    //     photo_service.UploadListByFamilyId();
+    //
+    //     // rapidjson::Document data_json;
+    //     // data_json.SetArray();
+    //     // auto& allocator = data_json.GetAllocator();
+    //     //
+    //     // for (const auto& [field_name, file] : req.form.files) {
+    //     //     rapidjson::Value file_obj(rapidjson::kObjectType);
+    //     //     file_obj.AddMember(
+    //     //         "field_name", rapidjson::Value(field_name.c_str(), allocator), allocator);
+    //     //     file_obj.AddMember(
+    //     //         "filename", rapidjson::Value(file.filename.c_str(), allocator), allocator);
+    //     //     file_obj.AddMember("size", static_cast<uint64_t>(file.content.size()), allocator);
+    //     //     file_obj.AddMember(
+    //     //         "content_type", rapidjson::Value(file.content_type.c_str(), allocator),
+    //     //         allocator);
+    //     //     file_obj.AddMember(
+    //     //         "name_in_form", rapidjson::Value(file.name.c_str(), allocator), allocator);
+    //     //     file_obj.AddMember(
+    //     //         "filename_length", static_cast<uint64_t>(file.filename.size()), allocator);
+    //     //     file_obj.AddMember(
+    //     //         "content_length", static_cast<uint64_t>(file.content.size()), allocator);
+    //     //
+    //     //     data_json.PushBack(file_obj, allocator);
+    //     // }
+    //     //
+    //     // api_response.status = "OK";
+    //     // api_response.code   = 200;
+    //     // api_response.msg    = "Files uploaded successfully";
+    //
+    //     utils::http_response::send(res, api_response);
+    // });
 
     // Video
-    server_.Get("/video", [](const httplib::Request& req, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-
-        rapidjson::Document body_json;
-        ApiResponse         api_response;
-
-        // Validation
-        if (!validate::json_request(req, res, body_json, api_response)) {
-            return;
-        }
-
-        if (!validate::get_video_by_id(body_json, api_response)) {
-            utils::http_response::send(res, api_response);
-            return;
-        }
-
-        VideoService video_service(res, body_json, api_response);
-        video_service.GetById();
-    });
-
-    server_.Get("/video/list", [](const httplib::Request& req, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-
-        rapidjson::Document body_json;
-        ApiResponse         api_response;
-
-        // Validation
-        if (!validate::json_request(req, res, body_json, api_response)) {
-            return;
-        }
-
-        if (!validate::get_video_list_by_family_id(body_json, api_response)) {
-            utils::http_response::send(res, api_response);
-            return;
-        }
-
-        VideoService video_service(res, body_json, api_response);
-        video_service.GetListByFamilyId();
-    });
+    // server_.Get("/video", [](const httplib::Request& req, httplib::Response& res) {
+    //     res.set_header("Access-Control-Allow-Origin", "*");
+    //
+    //     rapidjson::Document body_json;
+    //     ApiResponse         api_response;
+    //
+    //     // Validation
+    //     if (!validate::json_request(req, res, body_json, api_response)) {
+    //         return;
+    //     }
+    //
+    //     if (!validate::get_video_by_id(body_json, api_response)) {
+    //         utils::http_response::send(res, api_response);
+    //         return;
+    //     }
+    //
+    //     VideoService video_service(res, body_json, api_response);
+    //     video_service.GetById();
+    // });
+    //
+    // server_.Get("/video/list", [](const httplib::Request& req, httplib::Response& res) {
+    //     res.set_header("Access-Control-Allow-Origin", "*");
+    //
+    //     rapidjson::Document body_json;
+    //     ApiResponse         api_response;
+    //
+    //     // Validation
+    //     if (!validate::json_request(req, res, body_json, api_response)) {
+    //         return;
+    //     }
+    //
+    //     if (!validate::get_video_list_by_family_id(body_json, api_response)) {
+    //         utils::http_response::send(res, api_response);
+    //         return;
+    //     }
+    //
+    //     VideoService video_service(res, body_json, api_response);
+    //     video_service.GetListByFamilyId();
+    // });
 
     SetupRoutesOptions_(server_, routes_);
 }
