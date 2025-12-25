@@ -149,7 +149,18 @@ void PhotoService::GetListByFamilyId() {
 }
 
 void PhotoService::UploadListByFamilyId() {
-    std::string uid = utils::UIDGenerator::generate();
+    // family_id
+    std::int64_t family_id = 0;
+    if (auto it = req_.form.fields.find("family_id"); it != req_.form.fields.end()) {
+        family_id = std::stoll(it->second.content);
+    }
 
-    utils::http_response::send(res_, api_response_);
+    rapidjson::Document data;
+    data.SetObject();
+    auto& allocator = data.GetAllocator();
+
+    std::string uid = utils::UIDGenerator::generate();
+    // DBRegistry::PhotoRepository().InsertListByFamilyId(family_id, );
+
+    utils::http_response::send(res_, api_response_, data);
 }

@@ -107,7 +107,7 @@ PhotoListResult PgPhotoRepository::GetListByFamilyId(std::int64_t family_id,
     }
 }
 
-void PgPhotoRepository::CreateListByFamilyId(std::int64_t        family_id,
+void PgPhotoRepository::InsertListByFamilyId(std::int64_t        family_id,
                                              std::vector<Photo>& photo_list) {
     if (photo_list.empty())
         return;
@@ -141,7 +141,7 @@ void PgPhotoRepository::CreateListByFamilyId(std::int64_t        family_id,
         txn.exec(ss.str());
         txn.commit();
     } catch (const std::exception& e) {
-        std::cerr << "PgPhotoRepository::CreateListByFamilyId failed: " << e.what() << std::endl;
-        throw std::runtime_error(std::string("CreateListByFamilyId failed: ") + e.what());
+        std::cerr << "PgPhotoRepository::InsertListByFamilyId failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("InsertListByFamilyId failed: ") + e.what());
     }
 }
