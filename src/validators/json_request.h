@@ -8,12 +8,12 @@
 #include <rapidjson/writer.h>
 
 #include <models/api_response.h>
-#include <utils/http_response.h>
 #include <validators/access_token.h>
 #include <validators/json.h>
 
+
 namespace validate {
-    bool default_request(const httplib::Request& req,
+    bool json_request(const httplib::Request& req,
                          httplib::Response&      res,
                          rapidjson::Document&    body_json,
                          ApiResponse&            api_response);

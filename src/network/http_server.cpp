@@ -21,7 +21,7 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::default_request(req, res, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response)) {
             return;
         }
 
@@ -62,7 +62,7 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::default_request(req, res, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response)) {
             return;
         }
 
@@ -83,7 +83,7 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::default_request(req, res, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response)) {
             return;
         }
 
@@ -103,7 +103,7 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::default_request(req, res, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response)) {
             return;
         }
 
@@ -175,7 +175,7 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::default_request(req, res, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response)) {
             return;
         }
 
@@ -195,7 +195,7 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::default_request(req, res, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response)) {
             return;
         }
 
