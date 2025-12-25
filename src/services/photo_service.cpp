@@ -150,19 +150,12 @@ void PhotoService::GetListByFamilyId() {
 
 void PhotoService::UploadListByFamilyId() {
     std::int64_t family_id = 0;
-    if (auto it = req_.form.fields.find("family_id"); it != req_.form.fields.end()) {
-        try {
-            family_id = std::stoll(it->second.content);
-        } catch (const std::exception&) {
-            api_response_.status = "ERROR";
-            api_response_.code   = 400;
-            api_response_.msg    = "Invalid family_id";
-            rapidjson::Document empty_data;
-            empty_data.SetObject();
-            utils::http_response::send(res_, api_response_, empty_data);
-            return;
-        }
-    }
+    auto const   it        = req_.form.fields.find("family_id");
+    family_id              = std::stoll(it->second.content);
+
+    rapidjson::Document data_json;
+    data_json.SetObject();
+    auto& allocator = data_json.GetAllocator();
 
     std::vector<Photo> photo_vector;
     for (const auto& [field_name, file] : req_.form.files) {
@@ -182,9 +175,6 @@ void PhotoService::UploadListByFamilyId() {
 
     DBRegistry::PhotoRepository().InsertListByFamilyId(family_id, photo_vector);
 
-    rapidjson::Document data_json;
-    data_json.SetObject();
-    auto& allocator = data_json.GetAllocator();
     data_json.AddMember("count", static_cast<uint64_t>(photo_vector.size()), allocator);
 
     api_response_.status = "OK";

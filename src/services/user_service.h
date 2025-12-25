@@ -4,7 +4,6 @@
 #include <string>
 
 #include <httplib/httplib.h>
-#include <rapidjson/document.h>
 
 #include <config/config_manager.h>
 #include <db/db_registry.h>
@@ -15,6 +14,8 @@
 #include <utils/access_token_crypto.h>
 #include <utils/http_response.h>
 #include <utils/password.h>
+
+#include <rapidjson/document.h>
 
 class UserService {
 public:

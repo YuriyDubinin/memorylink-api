@@ -1,4 +1,4 @@
-#include "get_photo_list_by_family_id.h"
+#include "upload_photo_list_by_family_id.h"
 
 namespace validate {
     bool upload_photo_list_by_family_id(const httplib::Request&    req,
@@ -42,7 +42,6 @@ namespace validate {
             return false;
         }
 
-        // const std::int64_t family_id = body_json["family_id"].GetInt64();
         const auto      encrypted_token_opt = utils::extract_bearer_token(req);
         const Config&   cfg                 = ConfigManager::Get();
         AccessTokenData token_data          = utils::security::decrypt_access_token_struct(

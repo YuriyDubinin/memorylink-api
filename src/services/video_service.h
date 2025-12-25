@@ -4,7 +4,6 @@
 #include <string>
 
 #include <httplib/httplib.h>
-#include <rapidjson/document.h>
 
 #include <config/config_manager.h>
 #include <db/db_registry.h>
@@ -15,6 +14,8 @@
 #include <utils/extract_bearer_token.h>
 #include <utils/format_pg_timestamp.h>
 #include <utils/http_response.h>
+
+#include <rapidjson/document.h>
 
 class VideoService {
 public:

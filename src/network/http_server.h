@@ -5,9 +5,6 @@
 #include <vector>
 
 #include <httplib/httplib.h>
-#include <rapidjson/document.h>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/writer.h>
 
 #include <models/api_response.h>
 #include <services/family_service.h>
@@ -26,6 +23,10 @@
 #include <validators/get_video_list_by_family_id.h>
 #include <validators/json.h>
 #include <validators/json_request.h>
+
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 
 class HttpServer {
 public:

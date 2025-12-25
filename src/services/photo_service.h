@@ -5,7 +5,6 @@
 
 #include <httplib/httplib.h>
 #include <openssl/sha.h>
-#include <rapidjson/document.h>
 
 #include <config/config_manager.h>
 #include <db/db_registry.h>
@@ -19,6 +18,9 @@
 #include <utils/http_response.h>
 #include <utils/uid_generator.h>
 #include <validators/upload_photo_list_by_family_id.h>
+
+#include <rapidjson/document.h>
+#include <stb/stb_image.h>
 
 class PhotoService {
 public:
