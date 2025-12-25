@@ -60,9 +60,9 @@ namespace validate {
         const std::int64_t family_id = body_json["family_id"].GetInt64();
 
         const auto      encrypted_token_opt = utils::extract_bearer_token(req);
-        const Config&   cfg = ConfigManager::Get();
-        AccessTokenData token_data =
-            utils::security::decrypt_access_token_struct(*encrypted_token_opt, cfg.pepper, cfg.salt);
+        const Config&   cfg                 = ConfigManager::Get();
+        AccessTokenData token_data          = utils::security::decrypt_access_token_struct(
+            *encrypted_token_opt, cfg.pepper, cfg.salt);
 
         if (family_id != token_data.family_id) {
             api_response.status = "ERROR";
