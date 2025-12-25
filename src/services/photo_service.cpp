@@ -159,18 +159,27 @@ void PhotoService::UploadListByFamilyId() {
 
     std::vector<Photo> photo_vector;
     for (const auto& [field_name, file] : req_.form.files) {
+        int width = 0, height = 0, channels = 0;
+
+        if (!stbi_info_from_memory(reinterpret_cast<const unsigned char*>(file.content.data()),
+                                   static_cast<int>(file.content.size()),
+                                   &width,
+                                   &height,
+                                   nullptr)) {
+            continue; // не изображение
+        }
+
         Photo photo;
-        photo.family_id    = family_id;
-        photo.name         = file.filename;
-        photo.mime_type    = file.content_type;
-        photo.file_size_mb = static_cast<double>(file.content.size()) / (1024.0 * 1024.0);
-        photo.is_active    = true;
-        photo.hash         = utils::UIDGenerator::generate();
+        photo.family_id            = family_id;
+        photo.name                 = file.filename;
+        photo.mime_type            = file.content_type;
+        photo.file_size_mb         = static_cast<double>(file.content.size()) / (1024.0 * 1024.0);
+        photo.is_active            = true;
+        photo.hash                 = utils::UIDGenerator::generate();
+        photo.resolution_width_px  = width;
+        photo.resolution_height_px = height;
 
-        // photo.resolution_width_px = ...;
-        // photo.resolution_height_px = ...;
-
-        photo_vector.push_back(std::move(photo));
+        photo_vector.emplace_back(std::move(photo));
     }
 
     DBRegistry::PhotoRepository().InsertListByFamilyId(family_id, photo_vector);
