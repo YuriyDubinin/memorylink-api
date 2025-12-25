@@ -10,6 +10,7 @@
 #include <models/access_token_data.h>
 #include <models/api_response.h>
 #include <utils/access_token_crypto.h>
+#include <utils/extract_bearer_token.h>
 #include <utils/http_response.h>
 
 namespace validate {
