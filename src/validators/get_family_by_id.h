@@ -13,5 +13,7 @@
 #include <utils/http_response.h>
 
 namespace validate {
-    bool get_family_by_id(const rapidjson::Document& body_json, ApiResponse& api_response);
+    bool get_family_by_id(const httplib::Request&    req,
+                          const rapidjson::Document& body_json,
+                          ApiResponse&               api_response);
 }

@@ -17,7 +17,6 @@
 #include <utils/http_response.h>
 #include <validators/access_token.h>
 #include <validators/auth_user.h>
-#include <validators/json_request.h>
 #include <validators/file_request.h>
 #include <validators/get_family_by_id.h>
 #include <validators/get_photo_by_id.h>
@@ -26,6 +25,7 @@
 #include <validators/get_video_by_id.h>
 #include <validators/get_video_list_by_family_id.h>
 #include <validators/json.h>
+#include <validators/json_request.h>
 
 class HttpServer {
 public:

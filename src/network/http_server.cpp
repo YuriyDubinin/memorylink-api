@@ -21,11 +21,8 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::json_request(req, res, body_json, api_response)) {
-            return;
-        }
-
-        if (!validate::get_user_by_id(req, body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response) ||
+            !validate::get_user_by_id(req, body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
@@ -41,11 +38,8 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::json(req, body_json, api_response)) {
-            return;
-        }
-
-        if (!validate::auth_user(body_json, api_response)) {
+        if (!validate::json(req, body_json, api_response) ||
+            !validate::auth_user(body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }
@@ -62,11 +56,8 @@ void HttpServer::SetupRoutes_() {
         ApiResponse         api_response;
 
         // Validation
-        if (!validate::json_request(req, res, body_json, api_response)) {
-            return;
-        }
-
-        if (!validate::get_family_by_id(body_json, api_response)) {
+        if (!validate::json_request(req, res, body_json, api_response) ||
+            !validate::get_family_by_id(req, body_json, api_response)) {
             utils::http_response::send(res, api_response);
             return;
         }

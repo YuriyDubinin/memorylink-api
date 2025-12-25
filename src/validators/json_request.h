@@ -11,10 +11,9 @@
 #include <validators/access_token.h>
 #include <validators/json.h>
 
-
 namespace validate {
     bool json_request(const httplib::Request& req,
-                         httplib::Response&      res,
-                         rapidjson::Document&    body_json,
-                         ApiResponse&            api_response);
+                      httplib::Response&      res,
+                      rapidjson::Document&    body_json,
+                      ApiResponse&            api_response);
 }
