@@ -18,15 +18,12 @@ namespace validate {
             return false;
         }
 
-        auto               auth_it         = req.headers.find("Authorization");
-        const std::string& auth_header     = auth_it->second;
-        const std::string  bearer          = "Bearer ";
-        const std::string  encrypted_token = auth_header.substr(bearer.size());
+        const auto encrypted_token_opt = utils::extract_bearer_token(req);
 
         try {
             const Config&   cfg = ConfigManager::Get();
             AccessTokenData token_data =
-                utils::security::decrypt_access_token_struct(encrypted_token, cfg.pepper, cfg.salt);
+                utils::security::decrypt_access_token_struct(*encrypted_token_opt, cfg.pepper, cfg.salt);
 
             if (body_json["id"].GetInt() != token_data.family_id) {
                 api_response.status = "ERROR";
