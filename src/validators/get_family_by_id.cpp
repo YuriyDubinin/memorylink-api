@@ -21,9 +21,9 @@ namespace validate {
         const auto encrypted_token_opt = utils::extract_bearer_token(req);
 
         try {
-            const Config&   cfg = ConfigManager::Get();
-            AccessTokenData token_data =
-                utils::security::decrypt_access_token_struct(*encrypted_token_opt, cfg.pepper, cfg.salt);
+            const Config&   cfg        = ConfigManager::Get();
+            AccessTokenData token_data = utils::security::decrypt_access_token_struct(
+                *encrypted_token_opt, cfg.pepper, cfg.salt);
 
             if (body_json["id"].GetInt() != token_data.family_id) {
                 api_response.status = "ERROR";

@@ -1,9 +1,10 @@
 #include "video_service.h"
 
-VideoService::VideoService(httplib::Response&   res,
-                           rapidjson::Document& body_json,
-                           ApiResponse&         api_response)
-    : res_(res), body_json_(body_json), api_response_(api_response) {}
+VideoService::VideoService(const httplib::Request& req,
+                           httplib::Response&      res,
+                           rapidjson::Document&    body_json,
+                           ApiResponse&            api_response)
+    : req_(req), res_(res), body_json_(body_json), api_response_(api_response) {}
 
 void VideoService::GetById() {
     const std::int64_t id = body_json_["id"].GetInt64();
@@ -23,10 +24,10 @@ void VideoService::GetById() {
         return;
     }
 
-    const std::string encrypted_token = body_json_["access_token"].GetString();
-    const Config&     cfg             = ConfigManager::Get();
-    AccessTokenData   token_data =
-        utils::security::decrypt_access_token_struct(encrypted_token, cfg.pepper, cfg.salt);
+    const auto      encrypted_token_opt = utils::extract_bearer_token(req_);
+    const Config&   cfg                 = ConfigManager::Get();
+    AccessTokenData token_data =
+        utils::security::decrypt_access_token_struct(*encrypted_token_opt, cfg.pepper, cfg.salt);
 
     if (video->family_id != token_data.family_id) {
         api_response_.status = "ERROR";

@@ -152,26 +152,26 @@ void HttpServer::SetupRoutes_() {
     // });
 
     // Video
-    // server_.Get("/video", [](const httplib::Request& req, httplib::Response& res) {
-    //     res.set_header("Access-Control-Allow-Origin", "*");
-    //
-    //     rapidjson::Document body_json;
-    //     ApiResponse         api_response;
-    //
-    //     // Validation
-    //     if (!validate::json_request(req, res, body_json, api_response)) {
-    //         return;
-    //     }
-    //
-    //     if (!validate::get_video_by_id(body_json, api_response)) {
-    //         utils::http_response::send(res, api_response);
-    //         return;
-    //     }
-    //
-    //     VideoService video_service(res, body_json, api_response);
-    //     video_service.GetById();
-    // });
-    //
+    server_.Get("/video", [](const httplib::Request& req, httplib::Response& res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        rapidjson::Document body_json;
+        ApiResponse         api_response;
+
+        // Validation
+        if (!validate::json_request(req, res, body_json, api_response)) {
+            return;
+        }
+
+        if (!validate::get_video_by_id(body_json, api_response)) {
+            utils::http_response::send(res, api_response);
+            return;
+        }
+
+        VideoService video_service(req, res, body_json, api_response);
+        video_service.GetById();
+    });
+
     // server_.Get("/video/list", [](const httplib::Request& req, httplib::Response& res) {
     //     res.set_header("Access-Control-Allow-Origin", "*");
     //

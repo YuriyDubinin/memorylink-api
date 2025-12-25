@@ -12,12 +12,16 @@
 #include <models/api_response.h>
 #include <repositories/pg_video_repository.h>
 #include <utils/access_token_crypto.h>
+#include <utils/extract_bearer_token.h>
 #include <utils/format_pg_timestamp.h>
 #include <utils/http_response.h>
 
 class VideoService {
 public:
-    VideoService(httplib::Response& res, rapidjson::Document& body_json, ApiResponse& api_response);
+    VideoService(const httplib::Request& req,
+                 httplib::Response&      res,
+                 rapidjson::Document&    body_json,
+                 ApiResponse&            api_response);
 
     ~VideoService() = default;
 
@@ -25,7 +29,8 @@ public:
     void GetListByFamilyId();
 
 private:
-    httplib::Response&   res_;
-    rapidjson::Document& body_json_;
-    ApiResponse&         api_response_;
+    const httplib::Request& req_;
+    httplib::Response&      res_;
+    rapidjson::Document&    body_json_;
+    ApiResponse&            api_response_;
 };
