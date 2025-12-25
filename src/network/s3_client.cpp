@@ -130,7 +130,7 @@ bool S3Client::UploadMultipart(const std::string& bucket,
 
     auto create_outcome = client_->CreateMultipartUpload(create);
     if (!create_outcome.IsSuccess()) {
-        std::cerr << "[S3Client][UploadMultipart] CreateMultipartUpload failed: "
+        std::cerr << "[S3Client][UploadMultipart]: CreateMultipartUpload failed: "
                   << create_outcome.GetError().GetMessage() << "\n";
         return false;
     }
@@ -138,7 +138,7 @@ bool S3Client::UploadMultipart(const std::string& bucket,
     const auto    upload_id = create_outcome.GetResult().GetUploadId();
     std::ifstream file(file_path, std::ios::binary);
     if (!file.is_open()) {
-        std::cerr << "[S3Client][UploadMultipart] Cannot open file: " << file_path << "\n";
+        std::cerr << "[S3Client][UploadMultipart]: Cannot open file: " << file_path << "\n";
         return false;
     }
 
@@ -171,7 +171,7 @@ bool S3Client::UploadMultipart(const std::string& bucket,
             abort.SetUploadId(upload_id);
             client_->AbortMultipartUpload(abort);
 
-            std::cerr << "[S3Client][UploadMultipart] UploadPart failed: "
+            std::cerr << "[S3Client][UploadMultipart]: UploadPart failed: "
                       << outcome.GetError().GetMessage() << "\n";
             return false;
         }
@@ -195,7 +195,7 @@ bool S3Client::UploadMultipart(const std::string& bucket,
 
     auto complete_outcome = client_->CompleteMultipartUpload(complete);
     if (!complete_outcome.IsSuccess()) {
-        std::cerr << "[S3Client][UploadMultipart] CompleteMultipartUpload failed: "
+        std::cerr << "[S3Client][UploadMultipart]: CompleteMultipartUpload failed: "
                   << complete_outcome.GetError().GetMessage() << "\n";
         return false;
     }
@@ -221,7 +221,7 @@ bool S3Client::UploadFromMemory(const std::string&       bucket,
 
     auto outcome = client_->PutObject(request);
     if (!outcome.IsSuccess()) {
-        std::cerr << "[S3Client]: [UploadFromMemory] " << outcome.GetError().GetMessage() << "\n";
+        std::cerr << "[S3Client]: [UploadFromMemory]: " << outcome.GetError().GetMessage() << "\n";
         return false;
     }
     return true;
