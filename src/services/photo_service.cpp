@@ -149,5 +149,7 @@ void PhotoService::GetListByFamilyId() {
 }
 
 void PhotoService::UploadListByFamilyId() {
+    std::string uid = utils::UIDGenerator::generate();
+
     utils::http_response::send(res_, api_response_);
 }

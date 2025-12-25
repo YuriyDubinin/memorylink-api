@@ -17,6 +17,7 @@
 #include <utils/format_pg_timestamp.h>
 #include <utils/http_response.h>
 #include <validators/upload_photo_list_by_family_id.h>
+#include <utils/uid_generator.h>
 
 class PhotoService {
 public:
