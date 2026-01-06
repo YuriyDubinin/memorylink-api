@@ -28,6 +28,7 @@ public:
 
     void GetById();
     void GetListByFamilyId();
+    void UploadListByFamilyId();
 
 private:
     const httplib::Request& req_;
