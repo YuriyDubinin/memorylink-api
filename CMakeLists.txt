@@ -64,3 +64,8 @@ target_link_libraries(memorylink_api PRIVATE libpqxx::pqxx)
 find_package(AWSSDK REQUIRED COMPONENTS s3)
 target_include_directories(memorylink_api PRIVATE ${AWSSDK_INCLUDE_DIRS})
 target_link_libraries(memorylink_api PRIVATE ${AWSSDK_LIBRARIES})
+
+# MediaInfo
+find_package(libmediainfo CONFIG REQUIRED)
+target_link_libraries(memorylink_api PRIVATE libmediainfo::libmediainfo)
+
