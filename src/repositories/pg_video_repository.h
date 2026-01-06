@@ -20,6 +20,8 @@ public:
     VideoListResult
     GetListByFamilyId(std::int64_t family_id, std::size_t limit, std::size_t offset);
 
+    void InsertListByFamilyId(std::int64_t family_id, std::vector<Video>& video_list);
+
 private:
     PostgresConnection& db_;
 };

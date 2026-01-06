@@ -128,3 +128,45 @@ VideoListResult PgVideoRepository::GetListByFamilyId(std::int64_t family_id,
                                  e.what());
     }
 }
+
+void PgVideoRepository::InsertListByFamilyId(std::int64_t        family_id,
+                                             std::vector<Video>& video_list) {
+    if (video_list.empty())
+        return;
+
+    try {
+        pqxx::work        txn(db_.raw());
+        std::stringstream ss;
+        ss << "INSERT INTO videos (family_id, name, description, file_size_mb, mime_type, "
+              "resolution_width_px, resolution_height_px, duration_sec, frame_rate, hash, "
+              "is_active) VALUES ";
+
+        for (size_t i = 0; i < video_list.size(); ++i) {
+            const auto& video = video_list[i];
+
+            ss << "(" << family_id << ", " << txn.quote(video.name) << ", "
+               << (video.description ? txn.quote(*video.description) : "NULL") << ", " << std::fixed
+               << std::setprecision(2) << video.file_size_mb << ", " << txn.quote(video.mime_type)
+               << ", "
+               << (video.resolution_width_px ? std::to_string(*video.resolution_width_px) : "NULL")
+               << ", "
+               << (video.resolution_height_px ? std::to_string(*video.resolution_height_px)
+                                              : "NULL")
+               << ", " << (video.duration_sec ? std::to_string(*video.duration_sec) : "NULL")
+               << ", " << (video.frame_rate ? std::to_string(*video.frame_rate) : "NULL") << ", "
+               << txn.quote(video.hash) << ", " << (video.is_active ? "true" : "false") << ")";
+
+            if (i != video_list.size() - 1)
+                ss << ", ";
+        }
+
+        ss << ";";
+
+        txn.exec(ss.str());
+        txn.commit();
+    } catch (const std::exception& e) {
+        std::cerr << "[PgVideoRepository::InsertListByFamilyId] failed: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("[PgVideoRepository::InsertListByFamilyId] failed: ") +
+                                 e.what());
+    }
+}
