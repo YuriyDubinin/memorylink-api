@@ -209,8 +209,6 @@ void PhotoService::UploadListByFamilyId() {
         api_response_.code   = 500;
         api_response_.msg    = e.what();
 
-        data_json.AddMember("error", rapidjson::Value(e.what(), allocator), allocator);
-
         utils::http_response::send(res_, api_response_, data_json);
         return;
     }
