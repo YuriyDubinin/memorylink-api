@@ -193,17 +193,27 @@ void PhotoService::UploadListByFamilyId() {
 
         std::string s3_key = "photos/" + photo.hash;
 
-        // Загрузка напрямую из памяти
         std::vector<char> data(file.content.begin(), file.content.end());
         if (!s3_client->UploadFromMemory("memorylink-bucket", s3_key, data, photo.mime_type)) {
-            std::cerr << "[PhotoService]: Failed to upload: " << file.filename << "\n";
-            continue; // не изображение - пропуск
+            std::cerr << "[PhotoService]: Failed to upload to S3: " << file.filename << std::endl;
+            continue;
         }
 
         photo_vector.emplace_back(std::move(photo));
     }
 
-    DBRegistry::PhotoRepository().InsertListByFamilyId(family_id, photo_vector);
+    try {
+        DBRegistry::PhotoRepository().InsertListByFamilyId(family_id, photo_vector);
+    } catch (const std::exception& e) {
+        api_response_.status = "ERROR";
+        api_response_.code   = 500;
+        api_response_.msg    = e.what();
+
+        data_json.AddMember("error", rapidjson::Value(e.what(), allocator), allocator);
+
+        utils::http_response::send(res_, api_response_, data_json);
+        return;
+    }
 
     data_json.AddMember("count", static_cast<uint64_t>(photo_vector.size()), allocator);
 
