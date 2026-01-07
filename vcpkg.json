@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "dependencies": [
     "libpqxx",
+    "ffmpeg",
     {
       "name": "aws-sdk-cpp",
       "features": ["s3"]

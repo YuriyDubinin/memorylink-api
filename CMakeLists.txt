@@ -66,3 +66,7 @@ find_package(AWSSDK REQUIRED COMPONENTS s3)
 target_include_directories(memorylink_api PRIVATE ${AWSSDK_INCLUDE_DIRS})
 target_link_libraries(memorylink_api PRIVATE ${AWSSDK_LIBRARIES})
 
+# FFmpeg
+find_package(FFMPEG REQUIRED)
+target_link_libraries(memorylink_api PRIVATE ${FFMPEG_LIBRARIES})
+target_include_directories(memorylink_api PRIVATE ${FFMPEG_INCLUDE_DIRS})
