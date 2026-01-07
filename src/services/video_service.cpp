@@ -287,7 +287,7 @@ void VideoService::UploadByFamilyId() {
     std::vector<char> data(file.content.begin(), file.content.end());
     if (!s3_client->UploadFromMemory("memorylink-bucket", s3_key, data, video.mime_type)) {
         std::cerr << "[VideoService::UploadByFamilyId]: Warning checksum mismatch for: "
-                  << file.filename << " — данные всё равно будут записаны в базу" << std::endl;
+                  << file.filename << std::endl;
     }
 
     video_vector.emplace_back(std::move(video));
