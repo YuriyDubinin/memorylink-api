@@ -66,19 +66,3 @@ find_package(AWSSDK REQUIRED COMPONENTS s3)
 target_include_directories(memorylink_api PRIVATE ${AWSSDK_INCLUDE_DIRS})
 target_link_libraries(memorylink_api PRIVATE ${AWSSDK_LIBRARIES})
 
-# MediaInfo
-if(APPLE)
-    # На macOS vcpkg не генерирует конфигурационные файлы для libzen,
-    # поэтому указание пути к библиотекам для корректной линковки задано вручную.
-    message(STATUS "Building on macOS: linking MediaInfo and libzen manually")
-    target_link_libraries(memorylink_api PRIVATE
-            "${CMAKE_SOURCE_DIR}/vcpkg_installed/arm64-osx/lib/libmediainfo.a"
-            "${CMAKE_SOURCE_DIR}/vcpkg_installed/arm64-osx/lib/libzen.a"
-    )
-else()
-    find_package(MediaInfoLib CONFIG REQUIRED)
-    find_package(zen REQUIRED)
-    target_link_libraries(memorylink_api PRIVATE mediainfo zen)
-endif()
-
-

@@ -1,5 +1,15 @@
 #include "video_service.h"
 
+static std::optional<double> parse_double(const std::string& v) {
+    if (v.empty())
+        return std::nullopt;
+    try {
+        return std::stod(v);
+    } catch (...) {
+        return std::nullopt;
+    }
+}
+
 VideoService::VideoService(const httplib::Request& req,
                            httplib::Response&      res,
                            rapidjson::Document&    body_json,
@@ -161,3 +171,4 @@ void VideoService::GetListByFamilyId() {
 }
 
 void VideoService::UploadListByFamilyId() {}
+

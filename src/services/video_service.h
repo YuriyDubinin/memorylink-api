@@ -1,6 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <optional>
 #include <string>
 
 #include <httplib/httplib.h>
@@ -9,11 +13,13 @@
 #include <db/db_registry.h>
 #include <models/access_token_data.h>
 #include <models/api_response.h>
+#include <network/s3_client.h>
 #include <repositories/pg_video_repository.h>
 #include <utils/access_token_crypto.h>
 #include <utils/extract_bearer_token.h>
 #include <utils/format_pg_timestamp.h>
 #include <utils/http_response.h>
+#include <utils/uid_generator.h>
 
 #include <rapidjson/document.h>
 

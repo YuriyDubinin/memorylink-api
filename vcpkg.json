@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "dependencies": [
     "libpqxx",
-    "libmediainfo",
     {
       "name": "aws-sdk-cpp",
       "features": ["s3"]
