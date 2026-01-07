@@ -152,7 +152,7 @@ void HttpServer::SetupRoutes_() {
         video_service.GetListByFamilyId();
     });
 
-    server_.Post("/video/list/upload", [](const httplib::Request& req, httplib::Response& res) {
+    server_.Post("/video/upload", [](const httplib::Request& req, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
 
         rapidjson::Document body_json;
@@ -166,7 +166,7 @@ void HttpServer::SetupRoutes_() {
         }
 
         VideoService video_service(req, res, body_json, api_response);
-        video_service.UploadListByFamilyId();
+        video_service.UploadByFamilyId();
     });
 
     SetupRoutesOptions_(server_, routes_);

@@ -170,5 +170,150 @@ void VideoService::GetListByFamilyId() {
     utils::http_response::send(res_, api_response_, data);
 }
 
-void VideoService::UploadListByFamilyId() {}
+void VideoService::UploadByFamilyId() {
+    std::int64_t family_id = 0;
+    auto         it        = req_.form.fields.find("family_id");
+    if (it != req_.form.fields.end())
+        family_id = std::stoll(it->second.content);
 
+    rapidjson::Document data_json;
+    data_json.SetObject();
+    auto& allocator = data_json.GetAllocator();
+
+    std::vector<Video> video_vector;
+    auto               s3_client = GetS3Client();
+
+    if (!s3_client) {
+        api_response_.status = "ERROR";
+        api_response_.code   = 500;
+        api_response_.msg    = "S3 client not initialized";
+        utils::http_response::send(res_, api_response_, data_json);
+        return;
+    }
+
+    const auto& file = req_.form.files.begin()->second;
+
+    AVFormatContext* fmt_ctx = avformat_alloc_context();
+    if (!fmt_ctx)
+        return;
+
+    unsigned char* buffer = static_cast<unsigned char*>(av_malloc(file.content.size()));
+    if (!buffer) {
+        avformat_free_context(fmt_ctx);
+        return;
+    }
+    memcpy(buffer, file.content.data(), file.content.size());
+
+    auto read_data = std::make_pair(reinterpret_cast<const char*>(buffer), file.content.size());
+
+    AVIOContext* io_ctx = avio_alloc_context(
+        buffer,
+        file.content.size(),
+        0,
+        &read_data,
+        [](void* opaque, uint8_t* buf, int buf_size) -> int {
+            auto* data    = reinterpret_cast<std::pair<const char*, size_t>*>(opaque);
+            int   to_copy = std::min(buf_size, static_cast<int>(data->second));
+            if (to_copy <= 0)
+                return AVERROR_EOF;
+            memcpy(buf, data->first, to_copy);
+            data->first += to_copy;
+            data->second -= to_copy;
+            return to_copy;
+        },
+        nullptr,
+        nullptr);
+
+    fmt_ctx->pb = io_ctx;
+
+    // Открытие видео из памяти
+    if (avformat_open_input(&fmt_ctx, nullptr, nullptr, nullptr) < 0) {
+        avformat_free_context(fmt_ctx);
+        avio_context_free(&io_ctx);
+        api_response_.status = "ERROR";
+        api_response_.code   = 400;
+        api_response_.msg    = "Uploaded file is not a valid video";
+        utils::http_response::send(res_, api_response_, data_json);
+        return;
+    }
+
+    if (avformat_find_stream_info(fmt_ctx, nullptr) < 0) {
+        avformat_close_input(&fmt_ctx);
+        avio_context_free(&io_ctx);
+        api_response_.status = "ERROR";
+        api_response_.code   = 400;
+        api_response_.msg    = "Cannot read video stream info";
+        utils::http_response::send(res_, api_response_, data_json);
+        return;
+    }
+
+    // Поиск видеопотока
+    AVStream* video_stream = nullptr;
+    for (unsigned i = 0; i < fmt_ctx->nb_streams; i++) {
+        if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            video_stream = fmt_ctx->streams[i];
+            break;
+        }
+    }
+
+    if (!video_stream) {
+        avformat_close_input(&fmt_ctx);
+        avio_context_free(&io_ctx);
+
+        api_response_.status = "ERROR";
+        api_response_.code   = 400;
+        api_response_.msg    = "No video stream found";
+
+        utils::http_response::send(res_, api_response_, data_json);
+
+        return; // видеопоток отсутствует, не видео
+    }
+
+    Video video;
+    video.family_id            = family_id;
+    video.name                 = file.filename;
+    video.file_size_mb         = static_cast<double>(file.content.size()) / (1024.0 * 1024.0);
+    video.mime_type            = file.content_type;
+    video.is_active            = true;
+    video.resolution_width_px  = video_stream->codecpar->width;
+    video.resolution_height_px = video_stream->codecpar->height;
+    video.duration_sec         = fmt_ctx->duration / static_cast<double>(AV_TIME_BASE);
+    AVRational fr              = video_stream->r_frame_rate;
+    video.frame_rate           = fr.den != 0 ? fr.num / static_cast<double>(fr.den) : 0.0;
+    video.hash                 = utils::UIDGenerator::generate();
+
+    // Загрузка в S3
+    std::string       s3_key = "videos/" + video.hash;
+    std::vector<char> data(file.content.begin(), file.content.end());
+    if (!s3_client->UploadFromMemory("memorylink-bucket", s3_key, data, video.mime_type)) {
+        std::cerr << "[VideoService::UploadByFamilyId]: Warning checksum mismatch for: "
+                  << file.filename << " — данные всё равно будут записаны в базу" << std::endl;
+    }
+
+    video_vector.emplace_back(std::move(video));
+
+    // Освобождение ресурсов FFmpeg
+    avformat_close_input(&fmt_ctx);
+    avio_context_free(&io_ctx);
+
+    // Сохранение в БД
+    try {
+        DBRegistry::VideoRepository().InsertListByFamilyId(family_id, video_vector);
+    } catch (const std::exception& e) {
+        api_response_.status = "ERROR";
+        api_response_.code   = 500;
+        api_response_.msg    = e.what();
+
+        utils::http_response::send(res_, api_response_, data_json);
+
+        return;
+    }
+
+    data_json.AddMember("count", static_cast<uint64_t>(video_vector.size()), allocator);
+
+    api_response_.status = "OK";
+    api_response_.code   = 200;
+    api_response_.msg    = "Video uploaded successfully";
+
+    utils::http_response::send(res_, api_response_, data_json);
+}

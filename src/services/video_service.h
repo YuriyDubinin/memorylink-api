@@ -23,6 +23,17 @@
 
 #include <rapidjson/document.h>
 
+// Подключение FFmpeg для C++
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavdevice/avdevice.h>
+#include <libavformat/avformat.h>
+#include <libavutil/avutil.h>
+#include <libavutil/mathematics.h>
+#include <libswresample/swresample.h>
+#include <libswscale/swscale.h>
+}
+
 class VideoService {
 public:
     VideoService(const httplib::Request& req,
@@ -34,7 +45,7 @@ public:
 
     void GetById();
     void GetListByFamilyId();
-    void UploadListByFamilyId();
+    void UploadByFamilyId();
 
 private:
     const httplib::Request& req_;
